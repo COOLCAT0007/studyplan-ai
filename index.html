@@ -1,3629 +1,2299 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SD367MNW3E"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-SD367MNW3E');
-</script>
-
+<head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StudyForge V6 — Adaptive Study Planner</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#0b1020">
+<title>PrepLuma — Smart Study OS</title>
 
 <style>
 :root{
-  --bg:#070a12;
-  --panel:#0f1522;
-  --panel2:#111827;
-  --border:#273247;
-  --text:#f5f7fb;
-  --muted:#9ba8bc;
-  --purple:#7657ff;
-  --blue:#3ea6ff;
-  --green:#20c86b;
-  --yellow:#ffd928;
-  --red:#ff4d5e;
-  --shadow:0 20px 60px rgba(0,0,0,.28);
+  --bg:#080c18;
+  --panel:#101729;
+  --panel2:#151d32;
+  --card:#111a2d;
+  --card2:#182239;
+  --text:#f4f7ff;
+  --muted:#8f9ab3;
+  --line:rgba(255,255,255,.08);
+  --accent:#7c5cff;
+  --accent2:#25d6a2;
+  --warning:#ffb84d;
+  --danger:#ff667a;
+  --blue:#4da3ff;
+  --shadow:0 20px 60px rgba(0,0,0,.25);
 }
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
+.light{
+  --bg:#f4f6fb;
+  --panel:#ffffff;
+  --panel2:#f0f3fa;
+  --card:#ffffff;
+  --card2:#f5f7fc;
+  --text:#172033;
+  --muted:#69748b;
+  --line:rgba(20,30,50,.1);
+  --shadow:0 15px 45px rgba(25,40,70,.1);
 }
-
+*{box-sizing:border-box}
 body{
-  min-height:100vh;
-  background:
-    radial-gradient(circle at 10% 0%,rgba(118,87,255,.16),transparent 30%),
-    radial-gradient(circle at 90% 10%,rgba(62,166,255,.10),transparent 30%),
-    var(--bg);
-  color:var(--text);
+  margin:0;
   font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{display:flex;min-height:100vh}
 
-button,
-input,
-select{
-  font:inherit;
+/* SIDEBAR */
+.sidebar{
+  width:260px;
+  background:var(--panel);
+  border-right:1px solid var(--line);
+  padding:20px 14px;
+  position:fixed;
+  inset:0 auto 0 0;
+  z-index:20;
 }
-
-button{
-  cursor:pointer;
-}
-
-.app{
-  width:min(1200px,calc(100% - 32px));
-  margin:auto;
-  padding:28px 0 60px;
-}
-
-header{
-  margin-bottom:25px;
-}
-
 .logo{
-  font-size:34px;
-  font-weight:900;
-  letter-spacing:-1.5px;
-}
-
-.logo span{
-  background:linear-gradient(90deg,var(--purple),var(--blue));
-  -webkit-background-clip:text;
-  color:transparent;
-}
-
-.tagline{
-  color:var(--muted);
-  margin-top:6px;
-  font-size:15px;
-}
-
-.progress-wrap{
-  margin:24px 0;
-}
-
-.progress-top{
   display:flex;
-  justify-content:space-between;
-  color:var(--muted);
-  font-size:13px;
-  margin-bottom:9px;
-}
-
-.progress-bar{
-  height:8px;
-  background:#192132;
-  border-radius:99px;
-  overflow:hidden;
-}
-
-.progress-fill{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,var(--purple),var(--blue));
-  border-radius:99px;
-  transition:.35s ease;
-}
-
-.card{
-  background:rgba(15,21,34,.92);
-  border:1px solid var(--border);
-  border-radius:22px;
-  padding:28px;
-  box-shadow:var(--shadow);
-}
-
-.hidden{
-  display:none!important;
-}
-
-h1{
-  font-size:30px;
-  letter-spacing:-.8px;
-  margin-bottom:8px;
-}
-
-h2{
-  font-size:23px;
-  margin-bottom:7px;
-}
-
-h3{
-  font-size:17px;
-}
-
-.subtitle{
-  color:var(--muted);
-  line-height:1.6;
-  margin-bottom:24px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:18px;
-}
-
-.grid-3{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:16px;
-}
-
-.field{
-  margin-bottom:18px;
-}
-
-label{
-  display:block;
-  font-weight:700;
-  margin-bottom:8px;
-  font-size:14px;
-}
-
-select,
-input[type="number"],
-input[type="date"],
-input[type="text"]{
-  width:100%;
-  background:#0a0f1a;
-  border:1px solid var(--border);
-  border-radius:12px;
-  color:var(--text);
-  padding:13px 14px;
-  outline:none;
-}
-
-select:focus,
-input:focus{
-  border-color:var(--purple);
-  box-shadow:0 0 0 3px rgba(118,87,255,.12);
-}
-
-.actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:24px;
-}
-
-.btn{
-  border:1px solid var(--border);
-  color:var(--text);
-  background:#182131;
-  padding:12px 18px;
-  border-radius:12px;
-  font-weight:800;
-  transition:.2s;
-}
-
-.btn:hover{
-  transform:translateY(-1px);
-  border-color:#3b4963;
-}
-
-.btn.primary{
-  border:0;
-  background:linear-gradient(135deg,#6c48ed,#5145e8);
-}
-
-.btn.secondary{
-  background:#141c2b;
-}
-
-.btn.danger{
-  color:#ff7180;
-  background:rgba(255,77,94,.07);
-  border-color:rgba(255,77,94,.3);
-}
-
-.btn.success{
-  background:rgba(32,200,107,.10);
-  border-color:rgba(32,200,107,.3);
-  color:#5ce49a;
-}
-
-.option-grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-}
-
-.option{
-  border:1px solid var(--border);
-  background:#0c121e;
-  padding:16px;
-  border-radius:15px;
-  transition:.2s;
-}
-
-.option:hover{
-  border-color:#44516b;
-}
-
-.option.selected{
-  border-color:var(--purple);
-  background:rgba(118,87,255,.09);
-}
-
-.option input{
-  display:none;
-}
-
-.option-title{
-  font-weight:800;
-}
-
-.option-desc{
-  color:var(--muted);
-  font-size:13px;
-  margin-top:4px;
-  line-height:1.4;
-}
-
-/* TOPIC CARDS */
-
-.topic-list{
-  display:grid;
-  gap:12px;
-  margin-top:16px;
-}
-
-.topic-card{
-  display:grid;
-  grid-template-columns:1fr auto;
-  gap:16px;
   align-items:center;
-  background:#0b111c;
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:15px;
+  gap:11px;
+  padding:6px 10px 25px;
+}
+.logoMark{
+  width:38px;height:38px;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),#b45cff);
+  display:grid;place-items:center;font-weight:900;
+  box-shadow:0 8px 25px rgba(124,92,255,.3);
+}
+.logoText{font-size:20px;font-weight:850;letter-spacing:-.5px}
+.logoText span{color:var(--accent)}
+.navTitle{
+  color:var(--muted);font-size:10px;font-weight:800;
+  letter-spacing:1.4px;padding:13px 12px 7px;
+}
+.nav button{
+  width:100%;border:0;background:transparent;color:var(--muted);
+  padding:11px 12px;border-radius:11px;text-align:left;
+  display:flex;align-items:center;gap:12px;margin:3px 0;
+}
+.nav button:hover{background:var(--panel2);color:var(--text)}
+.nav button.active{
+  background:rgba(124,92,255,.14);color:var(--text);
+}
+.navIcon{width:22px;text-align:center}
+.sideBottom{
+  position:absolute;left:14px;right:14px;bottom:15px;
+}
+.profileMini{
+  background:var(--panel2);border:1px solid var(--line);
+  border-radius:14px;padding:12px;display:flex;gap:10px;align-items:center;
+}
+.avatar{
+  width:35px;height:35px;border-radius:11px;
+  display:grid;place-items:center;background:var(--accent);font-weight:800;
 }
 
-.topic-name{
-  font-weight:800;
+/* MAIN */
+.main{margin-left:260px;width:calc(100% - 260px);min-width:0}
+.topbar{
+  height:72px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;background:var(--bg);
+  position:sticky;top:0;z-index:10;
+}
+.search{
+  width:min(440px,45vw);background:var(--panel);
+  border:1px solid var(--line);border-radius:12px;
+  padding:10px 14px;color:var(--text);outline:none;
+}
+.topActions{display:flex;gap:8px}
+.iconBtn,.btn{
+  border:1px solid var(--line);background:var(--panel);
+  color:var(--text);border-radius:11px;padding:10px 14px;
+}
+.btn.primary{
+  background:var(--accent);border-color:var(--accent);color:white;
+}
+.btn.success{background:var(--accent2);border-color:var(--accent2);color:#071510}
+.btn.danger{background:transparent;color:var(--danger)}
+.btn:hover,.iconBtn:hover{transform:translateY(-1px)}
+.content{padding:28px;max-width:1700px;margin:auto}
+.page{display:none}
+.page.active{display:block}
+
+/* TYPOGRAPHY */
+h1{font-size:30px;letter-spacing:-1px;margin:0 0 7px}
+h2{font-size:19px;margin:0}
+h3{font-size:15px;margin:0}
+.sub{color:var(--muted);font-size:13px}
+.sectionHead{
+  display:flex;align-items:center;justify-content:space-between;
+  margin:28px 0 13px;
 }
 
-.topic-subject{
-  color:var(--muted);
-  font-size:12px;
-  margin-top:3px;
+/* CARDS */
+.grid{display:grid;gap:14px}
+.stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+.card{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:17px;padding:18px;box-shadow:var(--shadow);
 }
-
-.level-buttons{
-  display:flex;
-  gap:7px;
-  flex-wrap:wrap;
-}
-
-.level{
-  border:1px solid var(--border);
-  background:#121a29;
-  color:var(--muted);
-  padding:8px 11px;
-  border-radius:9px;
-  font-size:12px;
-  font-weight:800;
-}
-
-.level.easy.active{
-  background:rgba(32,200,107,.13);
-  border-color:var(--green);
-  color:#62e99c;
-}
-
-.level.average.active{
-  background:rgba(255,217,40,.12);
-  border-color:var(--yellow);
-  color:#ffe86a;
-}
-
-.level.hard.active{
-  background:rgba(255,77,94,.12);
-  border-color:var(--red);
-  color:#ff7180;
-}
-
-/* STATS */
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:14px;
-  margin-bottom:18px;
-}
-
 .stat{
-  background:#0b111c;
-  border:1px solid var(--border);
-  border-radius:15px;
-  padding:18px;
+  min-height:125px;display:flex;flex-direction:column;justify-content:space-between;
 }
-
-.stat-value{
-  font-size:27px;
-  font-weight:900;
+.statTop{display:flex;justify-content:space-between;align-items:center}
+.statIcon{
+  width:38px;height:38px;border-radius:11px;background:var(--panel2);
+  display:grid;place-items:center;
 }
-
-.stat-label{
-  color:var(--muted);
-  font-size:13px;
-  margin-top:3px;
+.statValue{font-size:27px;font-weight:850;letter-spacing:-1px}
+.progress{
+  height:8px;background:var(--panel2);border-radius:20px;overflow:hidden;
 }
+.progress div{
+  height:100%;border-radius:20px;background:linear-gradient(90deg,var(--accent),#b45cff);
+}
+.progress.green div{background:linear-gradient(90deg,var(--accent2),#69e6c0)}
+.progress.blue div{background:linear-gradient(90deg,var(--blue),#8bc8ff)}
+.progress.orange div{background:linear-gradient(90deg,var(--warning),#ffd278)}
 
 /* DASHBOARD */
-
-.dashboard-grid{
-  display:grid;
-  grid-template-columns:2fr 1fr;
-  gap:16px;
+.hero{
+  background:
+    radial-gradient(circle at 85% 10%,rgba(124,92,255,.22),transparent 35%),
+    var(--panel);
+  border:1px solid var(--line);border-radius:22px;
+  padding:25px;margin-bottom:16px;
 }
-
-.panel{
-  background:#0b111c;
-  border:1px solid var(--border);
-  border-radius:17px;
-  padding:20px;
+.heroRow{display:flex;justify-content:space-between;gap:20px;align-items:center}
+.heroButtons{display:flex;gap:9px;margin-top:17px}
+.ring{
+  width:130px;height:130px;border-radius:50%;
+  background:conic-gradient(var(--accent) var(--p,0%),var(--panel2) 0);
+  display:grid;place-items:center;flex-shrink:0;
 }
-
-.big-progress{
-  margin-top:15px;
+.ring:before{
+  content:"";position:absolute;width:98px;height:98px;border-radius:50%;
+  background:var(--panel);
 }
-
-.big-progress-bar{
-  height:12px;
-  border-radius:99px;
-  background:#1b2434;
-  overflow:hidden;
+.ringInner{position:relative;text-align:center}
+.ringInner b{font-size:25px;display:block}
+.dashboardGrid{
+  display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-top:14px;
 }
-
-.big-progress-fill{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,var(--purple),var(--blue));
-  transition:.4s;
-}
-
-.progress-number{
-  display:flex;
-  justify-content:space-between;
-  margin-top:9px;
-  color:var(--muted);
-  font-size:13px;
-}
-
-.knowledge-list{
-  display:grid;
-  gap:12px;
-  margin-top:13px;
-}
-
-.knowledge-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding-bottom:11px;
-  border-bottom:1px solid #1c2635;
-}
-
-.knowledge-left{
-  display:flex;
-  align-items:center;
-  gap:9px;
-}
-
-.dot{
-  width:14px;
-  height:14px;
-  border-radius:50%;
-}
-
-.dot.easy{
-  background:var(--green);
-}
-
-.dot.average{
-  background:var(--yellow);
-}
-
-.dot.hard{
-  background:var(--red);
-}
-
-/* PLAN */
-
-.plan-container{
-  margin-top:18px;
-}
-
-.day-card{
-  border:1px solid var(--border);
-  background:#0b111c;
-  border-radius:18px;
-  margin-bottom:15px;
-  overflow:hidden;
-}
-
-.day-header{
-  padding:18px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  background:#101827;
-  border-bottom:1px solid var(--border);
-}
-
-.day-title{
-  font-size:18px;
-  font-weight:900;
-}
-
-.day-meta{
-  color:var(--muted);
-  font-size:12px;
-  margin-top:3px;
-}
-
-.day-progress{
-  min-width:130px;
-}
-
-.day-progress-text{
-  text-align:right;
-  color:var(--muted);
-  font-size:12px;
-  margin-bottom:5px;
-}
-
-.mini-bar{
-  height:6px;
-  background:#202a3b;
-  border-radius:99px;
-  overflow:hidden;
-}
-
-.mini-fill{
-  height:100%;
-  width:0%;
-  background:var(--green);
-  transition:.3s;
-}
-
-.task-list{
-  padding:8px 16px 14px;
-}
-
 .task{
-  display:flex;
-  align-items:center;
-  gap:13px;
-  padding:14px 4px;
-  border-bottom:1px solid #1a2331;
+  padding:13px;border:1px solid var(--line);border-radius:12px;
+  display:flex;gap:12px;align-items:center;margin:8px 0;background:var(--card2);
 }
-
-.task:last-child{
-  border-bottom:0;
+.check{
+  width:22px;height:22px;border-radius:7px;border:1px solid var(--line);
+  background:transparent;color:white;display:grid;place-items:center;
 }
-
-/* CIRCLE TICK */
-
-.task-check{
-  width:26px;
-  height:26px;
-  min-width:26px;
-  border-radius:50%;
-  border:2px solid #59677e;
-  background:transparent;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:white;
-  font-size:14px;
-  font-weight:900;
-  transition:.2s;
-}
-
-.task-check:hover{
-  border-color:var(--green);
-  transform:scale(1.05);
-}
-
-.task.completed .task-check{
-  background:var(--green);
-  border-color:var(--green);
-}
-
-.task.completed .task-title{
-  text-decoration:line-through;
-  color:#718097;
-}
-
-.task.completed .task-detail{
-  color:#59667a;
-}
-
-.task-content{
-  flex:1;
-}
-
-.task-title{
-  font-weight:800;
-  transition:.2s;
-}
-
-.task-detail{
-  color:var(--muted);
-  font-size:12px;
-  margin-top:3px;
-  line-height:1.45;
-}
-
+.check.done{background:var(--accent2);border-color:var(--accent2);color:#05140f}
+.taskInfo{flex:1;min-width:0}
+.taskTitle{font-weight:700;font-size:13px}
+.taskMeta{color:var(--muted);font-size:11px;margin-top:3px}
 .badge{
-  padding:5px 8px;
-  border-radius:7px;
-  font-size:10px;
-  font-weight:900;
-  white-space:nowrap;
+  display:inline-flex;align-items:center;gap:4px;
+  border:1px solid var(--line);border-radius:30px;
+  padding:4px 8px;font-size:10px;color:var(--muted);
 }
+.badge.hard{color:var(--danger)}
+.badge.avg{color:var(--warning)}
+.badge.easy{color:var(--accent2)}
 
-.badge.learn{
-  color:#c9bfff;
-  background:rgba(118,87,255,.12);
+/* CHAPTERS */
+.setupGrid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
 }
-
-.badge.practice{
-  color:#72c5ff;
-  background:rgba(62,166,255,.11);
+label.smallLabel{
+  font-size:11px;color:var(--muted);display:block;margin-bottom:6px;
 }
-
-.badge.test{
-  color:#ffe86a;
-  background:rgba(255,217,40,.10);
+select,input,textarea{
+  width:100%;background:var(--panel2);border:1px solid var(--line);
+  color:var(--text);border-radius:10px;padding:10px;outline:none;
 }
-
-.badge.revision{
-  color:#65e99a;
-  background:rgba(32,200,107,.10);
+textarea{min-height:130px;resize:vertical}
+.chapterTools{
+  display:flex;gap:9px;align-items:center;margin-bottom:12px;
 }
-
-/* REVISION */
-
-.revision{
-  margin-top:16px;
+.chapterGrid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;
 }
-
-.revision-row{
-  display:flex;
-  justify-content:space-between;
-  padding:13px 0;
-  border-bottom:1px solid #1b2432;
+.chapterCard{
+  border:1px solid var(--line);background:var(--card);
+  border-radius:15px;padding:15px;
 }
-
-.revision-row:last-child{
-  border-bottom:0;
+.chapterTop{display:flex;gap:10px;align-items:flex-start}
+.chapterCheck{
+  width:20px;height:20px;accent-color:var(--accent);margin-top:2px;
 }
+.chapterName{font-weight:750;flex:1}
+.chapterControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}
+.chapterFooter{margin-top:12px}
 
-.revision-left{
-  display:flex;
-  align-items:center;
-  gap:10px;
+/* PLANNER */
+.planToolbar{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
 }
-
-/* CUSTOM TOPIC */
-
-.custom-box{
-  display:flex;
-  gap:9px;
-  margin-top:15px;
+.dayPlan{
+  border:1px solid var(--line);background:var(--card);
+  border-radius:15px;margin:12px 0;overflow:hidden;
 }
-
-.custom-box input{
-  flex:1;
+.dayHeader{
+  padding:15px;background:var(--panel2);
+  display:flex;justify-content:space-between;align-items:center;
 }
+.planTask{
+  display:flex;gap:10px;padding:13px 15px;border-top:1px solid var(--line);
+}
+.planTask .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:5px}
 
-/* SUMMARY */
+/* MIND MAP */
+.mapShell{
+  min-height:540px;background:
+  radial-gradient(circle at center,rgba(124,92,255,.1),transparent 45%),
+  var(--card);
+  border:1px solid var(--line);border-radius:18px;
+  overflow:auto;padding:35px;
+}
+.map{
+  min-width:850px;min-height:450px;
+  display:flex;flex-direction:column;align-items:center;
+}
+.centerNode{
+  padding:18px 28px;border-radius:18px;
+  background:linear-gradient(135deg,var(--accent),#9c61ff);
+  color:white;font-weight:850;font-size:17px;
+  box-shadow:0 15px 45px rgba(124,92,255,.25);
+}
+.mapLine{width:2px;height:30px;background:var(--line)}
+.mapBranches{
+  width:100%;display:grid;grid-template-columns:repeat(4,1fr);gap:15px;
+}
+.branch{
+  border:1px solid var(--line);border-radius:14px;
+  background:var(--panel);padding:14px;
+}
+.branch h3{color:var(--accent);margin-bottom:10px}
+.branch li{font-size:12px;color:var(--muted);margin:7px 0}
 
-.summary-box{
-  background:linear-gradient(
-    135deg,
-    rgba(118,87,255,.12),
-    rgba(62,166,255,.07)
-  );
-  border:1px solid rgba(118,87,255,.25);
-  border-radius:16px;
+/* FOCUS */
+.focusBox{text-align:center;padding:50px 20px}
+.timer{
+  font-size:78px;font-weight:900;letter-spacing:-4px;
+  margin:30px 0;
+}
+.timerRing{
+  width:280px;height:280px;border-radius:50%;
+  border:10px solid var(--panel2);margin:auto;
+  display:grid;place-items:center;
+}
+.timerBtns{display:flex;justify-content:center;gap:10px}
+
+/* ANALYTICS */
+.chart{
+  height:220px;display:flex;align-items:flex-end;gap:9px;
+  padding:20px 5px 0;
+}
+.barWrap{height:100%;flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}
+.bar{
+  width:100%;max-width:42px;border-radius:7px 7px 2px 2px;
+  background:linear-gradient(to top,var(--accent),#b45cff);
+  min-height:3px;
+}
+.barLabel{font-size:9px;color:var(--muted)}
+
+/* CALENDAR */
+.calendar{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:5px;
+}
+.calHead{color:var(--muted);font-size:11px;text-align:center;padding:7px}
+.calDay{
+  min-height:85px;border:1px solid var(--line);border-radius:10px;
+  padding:8px;background:var(--card);font-size:12px;
+}
+.calDay.today{outline:2px solid var(--accent)}
+.calDot{font-size:9px;margin-top:8px;color:var(--accent2)}
+
+/* GOALS */
+.goal{margin:10px 0;padding:14px;border:1px solid var(--line);border-radius:13px}
+.goalTop{display:flex;justify-content:space-between;gap:10px}
+
+/* MODAL */
+.modal{
+  position:fixed;inset:0;background:rgba(0,0,0,.65);
+  display:none;align-items:center;justify-content:center;z-index:100;
   padding:20px;
-  margin-top:18px;
 }
-
-.summary-item{
-  display:flex;
-  justify-content:space-between;
-  gap:15px;
-  padding:9px 0;
-  border-bottom:1px solid rgba(255,255,255,.07);
+.modal.open{display:flex}
+.modalBox{
+  width:min(700px,100%);max-height:90vh;overflow:auto;
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:20px;padding:22px;
 }
-
-.summary-item:last-child{
-  border-bottom:0;
-}
-
-.notice{
-  margin-top:18px;
-  background:rgba(118,87,255,.08);
-  border:1px solid rgba(118,87,255,.25);
-  padding:14px 16px;
-  border-radius:13px;
-  color:#c9d0e4;
-  line-height:1.5;
-  font-size:14px;
-}
+.modalHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.formGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.full{grid-column:1/-1}
 
 /* MOBILE */
-
-@media(max-width:850px){
-  .grid,
-  .dashboard-grid{
-    grid-template-columns:1fr;
-  }
-
-  .grid-3,
-  .stats{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-
-  .option-grid{
-    grid-template-columns:1fr;
-  }
+.mobileNav{display:none}
+@media(max-width:1100px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .dashboardGrid{grid-template-columns:1fr}
+  .chapterGrid{grid-template-columns:repeat(2,1fr)}
+  .setupGrid,.planToolbar{grid-template-columns:repeat(2,1fr)}
 }
-
-@media(max-width:600px){
-  .app{
-    width:min(100% - 20px,1200px);
-    padding-top:18px;
+@media(max-width:760px){
+  .sidebar{display:none}
+  .main{margin-left:0;width:100%;padding-bottom:70px}
+  .topbar{padding:0 13px}
+  .search{width:55vw}
+  .content{padding:16px}
+  h1{font-size:24px}
+  .stats{grid-template-columns:1fr 1fr;gap:8px}
+  .stat{padding:13px;min-height:110px}
+  .statValue{font-size:21px}
+  .heroRow{align-items:flex-start}
+  .ring{width:90px;height:90px}
+  .ring:before{width:68px;height:68px}
+  .ringInner b{font-size:17px}
+  .heroButtons{flex-wrap:wrap}
+  .chapterGrid{grid-template-columns:1fr}
+  .setupGrid,.planToolbar,.formGrid{grid-template-columns:1fr}
+  .mapBranches{grid-template-columns:1fr 1fr}
+  .mobileNav{
+    display:flex;position:fixed;bottom:0;left:0;right:0;height:62px;
+    background:var(--panel);border-top:1px solid var(--line);
+    z-index:30;justify-content:space-around;padding:6px;
   }
-
-  .card{
-    padding:18px;
-    border-radius:17px;
+  .mobileNav button{
+    border:0;background:transparent;color:var(--muted);font-size:10px;
   }
-
-  h1{
-    font-size:25px;
-  }
-
-  .logo{
-    font-size:28px;
-  }
-
-  .grid-3,
-  .stats{
-    grid-template-columns:1fr;
-  }
-
-  .topic-card{
-    grid-template-columns:1fr;
-  }
-
-  .day-header{
-    align-items:flex-start;
-    flex-direction:column;
-  }
-
-  .day-progress{
-    width:100%;
-  }
-
-  .badge{
-    display:none;
-  }
-
-  .custom-box{
-    flex-direction:column;
-  }
+  .mobileNav button.active{color:var(--accent)}
+  .timer{font-size:55px}
 }
 </style>
 </head>
 
 <body>
-
 <div class="app">
 
-<header>
-  <div class="logo">Study<span>Forge</span> ⚒️</div>
-  <div class="tagline">
-    Adaptive planning that changes with your exam, deadline and actual knowledge.
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logoMark">P</div>
+    <div class="logoText">Prep<span>Luma</span></div>
+  </div>
+
+  <div class="navTitle">WORKSPACE</div>
+  <nav class="nav">
+    <button class="active" data-page="dashboard"><span class="navIcon">⌂</span>Dashboard</button>
+    <button data-page="planner"><span class="navIcon">▣</span>Smart Planner</button>
+    <button data-page="chapters"><span class="navIcon">▤</span>Chapters</button>
+    <button data-page="revision"><span class="navIcon">↻</span>Revision</button>
+    <button data-page="mindmap"><span class="navIcon">⌘</span>Mind Maps</button>
+    <button data-page="focus"><span class="navIcon">◷</span>Focus</button>
+  </nav>
+
+  <div class="navTitle">INSIGHTS</div>
+  <nav class="nav">
+    <button data-page="analytics"><span class="navIcon">◒</span>Analytics</button>
+    <button data-page="calendar"><span class="navIcon">□</span>Calendar</button>
+    <button data-page="goals"><span class="navIcon">◇</span>Goals & Exams</button>
+    <button data-page="notes"><span class="navIcon">✎</span>Notes</button>
+  </nav>
+
+  <div class="navTitle">SYSTEM</div>
+  <nav class="nav">
+    <button data-page="settings"><span class="navIcon">⚙</span>Settings</button>
+  </nav>
+
+  <div class="sideBottom">
+    <div class="profileMini">
+      <div class="avatar" id="avatar">S</div>
+      <div>
+        <b id="sideName">Student</b>
+        <div class="sub" id="sideLevel">Level 1 • 0 XP</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+<header class="topbar">
+  <input id="globalSearch" class="search" placeholder="⌕  Search chapters, notes, tasks...">
+  <div class="topActions">
+    <button class="iconBtn" id="themeBtn" title="Theme">☾</button>
+    <button class="btn primary" id="quickFocus">Start Focus</button>
   </div>
 </header>
 
-<div class="progress-wrap">
-  <div class="progress-top">
-    <span id="stepText">Step 1 of 7</span>
-    <span id="stepPercent">14%</span>
-  </div>
-  <div class="progress-bar">
-    <div class="progress-fill" id="wizardProgress"></div>
-  </div>
-</div>
-
-
-<!-- =========================================================
-     STEP 1
-========================================================= -->
-
-<section class="card step" id="step1">
-
-  <h1>Let's build your study plan 🚀</h1>
-
-  <p class="subtitle">
-    Choose your country and exam. StudyForge will load relevant subjects
-    and topics automatically.
-  </p>
-
-  <div class="grid">
-
-    <div class="field">
-      <label>Country / Region</label>
-      <select id="countrySelect"></select>
-    </div>
-
-    <div class="field">
-      <label>Exam / Curriculum</label>
-      <select id="examSelect"></select>
-    </div>
-
-  </div>
-
-  <div class="summary-box" id="examDescription">
-    Choose your exam to continue.
-  </div>
-
-  <div class="actions">
-    <button class="btn primary" onclick="nextStep()">
-      Continue →
-    </button>
-  </div>
-
-</section>
-
-
-<!-- =========================================================
-     STEP 2
-========================================================= -->
-
-<section class="card step hidden" id="step2">
-
-  <h1>What are you studying?</h1>
-
-  <p class="subtitle">
-    Select the subjects you want StudyForge to include in your plan.
-  </p>
-
-  <div class="option-grid" id="subjectList"></div>
-
-  <div class="actions">
-    <button class="btn secondary" onclick="prevStep()">← Back</button>
-    <button class="btn primary" onclick="nextStep()">Continue →</button>
-  </div>
-
-</section>
-
-
-<!-- =========================================================
-     STEP 3
-========================================================= -->
-
-<section class="card step hidden" id="step3">
-
-  <h1>Rate every topic honestly 🎯</h1>
-
-  <p class="subtitle">
-    Don't choose what you <i>wish</i> you knew. Choose what you can actually
-    solve today.
-  </p>
-
-  <div class="option-grid" style="margin-bottom:18px">
-
-    <div class="option selected">
-      <div class="option-title">🟢 Easy</div>
-      <div class="option-desc">
-        You understand most of it. Usually needs about 2 days.
-      </div>
-    </div>
-
-    <div class="option">
-      <div class="option-title">🟡 Average</div>
-      <div class="option-desc">
-        You understand some but need proper practice. Usually about 3 days.
-      </div>
-    </div>
-
-    <div class="option">
-      <div class="option-title">🔴 Hard</div>
-      <div class="option-desc">
-        Weak or almost new. Gets more time and practice.
-      </div>
-    </div>
-
-  </div>
-
-  <div class="topic-list" id="topicList"></div>
-
-  <div class="custom-box">
-    <input
-      type="text"
-      id="customTopic"
-      placeholder="Add your own topic / chapter..."
-    >
-    <button class="btn secondary" onclick="addCustomTopic()">
-      + Add Topic
-    </button>
-  </div>
-
-  <div class="actions">
-    <button class="btn secondary" onclick="prevStep()">← Back</button>
-    <button class="btn primary" onclick="nextStep()">Continue →</button>
-  </div>
-
-</section>
-
-
-<!-- =========================================================
-     STEP 4
-========================================================= -->
-
-<section class="card step hidden" id="step4">
-
-  <h1>Tell StudyForge where you are right now 📊</h1>
-
-  <p class="subtitle">
-    These numbers help the planner adjust your workload instead of giving
-    everyone the same schedule.
-  </p>
-
-  <div class="grid">
-
-    <div class="field">
-      <label>Questions you can currently solve out of 20</label>
-      <input
-        type="number"
-        id="questionsSolved"
-        min="0"
-        max="20"
-        value="5"
-      >
-    </div>
-
-    <div class="field">
-      <label>Recent mock/test score (%)</label>
-      <input
-        type="number"
-        id="mockScore"
-        min="0"
-        max="100"
-        value="40"
-      >
-    </div>
-
-    <div class="field">
-      <label>Study hours available per day</label>
-      <input
-        type="number"
-        id="studyHours"
-        min="0.5"
-        max="16"
-        step="0.5"
-        value="4"
-      >
-    </div>
-
-    <div class="field">
-      <label>Questions you can attempt per day</label>
-      <input
-        type="number"
-        id="dailyQuestions"
-        min="5"
-        max="500"
-        value="40"
-      >
-    </div>
-
-  </div>
-
-  <div class="notice">
-    💡 Be realistic. A plan that fits your actual day is more useful than
-    a perfect-looking plan that you abandon after two days.
-  </div>
-
-  <div class="actions">
-    <button class="btn secondary" onclick="prevStep()">← Back</button>
-    <button class="btn primary" onclick="nextStep()">Continue →</button>
-  </div>
-
-</section>
-
-
-<!-- =========================================================
-     STEP 5
-========================================================= -->
-
-<section class="card step hidden" id="step5">
-
-  <h1>Set your deadline 📅</h1>
-
-  <p class="subtitle">
-    StudyForge will calculate how much time each topic can receive.
-  </p>
-
-  <div class="grid">
-
-    <div class="field">
-      <label>Exam date</label>
-      <input type="date" id="examDate">
-    </div>
-
-    <div class="field">
-      <label>Study days per week</label>
-      <select id="studyDays">
-        <option value="7">7 days</option>
-        <option value="6" selected>6 days</option>
-        <option value="5">5 days</option>
-        <option value="4">4 days</option>
-        <option value="3">3 days</option>
-      </select>
-    </div>
-
-  </div>
-
-  <div class="summary-box">
-    <div class="summary-item">
-      <span>Available calendar days</span>
-      <strong id="availableDays">—</strong>
-    </div>
-
-    <div class="summary-item">
-      <span>Planned study days</span>
-      <strong id="plannedStudyDays">—</strong>
-    </div>
-  </div>
-
-  <div class="actions">
-    <button class="btn secondary" onclick="prevStep()">← Back</button>
-    <button class="btn primary" onclick="generatePlan()">
-      ⚡ Generate Adaptive Plan
-    </button>
-  </div>
-
-</section>
-
-
-<!-- =========================================================
-     STEP 6
-========================================================= -->
-
-<section class="card step hidden" id="step6">
-
-  <h1>Your adaptive plan is ready ⚡</h1>
-
-  <p class="subtitle">
-    StudyForge has converted your topic difficulty, available time and
-    performance into a practical preparation schedule.
-  </p>
-
-  <div class="stats">
-
-    <div class="stat">
-      <div class="stat-value" id="planTotalDays">0</div>
-      <div class="stat-label">Study Days</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-value" id="planTasks">0</div>
-      <div class="stat-label">Total Tasks</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-value" id="planHours">0</div>
-      <div class="stat-label">Hours / Day</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-value" id="planTopics">0</div>
-      <div class="stat-label">Topics</div>
-    </div>
-
-  </div>
-
-  <div class="summary-box" id="planExplanation"></div>
-
-  <div class="actions">
-    <button class="btn secondary" onclick="prevStep()">← Back</button>
-    <button class="btn primary" onclick="showDashboard()">
-      Open Dashboard →
-    </button>
-  </div>
-
-</section>
-
-
-<!-- =========================================================
-     STEP 7 — FINAL DASHBOARD
-========================================================= -->
-
-<section class="card step hidden" id="step7">
-
-  <h1>StudyForge Dashboard 📈</h1>
-
-  <p class="subtitle">
-    Your plan at a glance. Complete tasks using the circular buttons below.
-  </p>
-
-  <div class="stats">
-
-    <div class="stat">
-      <div class="stat-value" id="dashCompleted">0</div>
-      <div class="stat-label">Completed</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-value" id="dashRemaining">0</div>
-      <div class="stat-label">Remaining</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-value" id="dashPercent">0%</div>
-      <div class="stat-label">Overall Progress</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-value" id="dashDaysDone">0</div>
-      <div class="stat-label">Days Completed</div>
-    </div>
-
-  </div>
-
-
-  <div class="dashboard-grid">
-
-    <div class="panel">
-
-      <h2>Overall Progress</h2>
-
-      <p style="color:var(--muted);font-size:13px">
-        Completed preparation tasks
-      </p>
-
-      <div class="big-progress">
-
-        <div class="big-progress-bar">
-          <div class="big-progress-fill" id="overallFill"></div>
+<div class="content">
+
+<!-- DASHBOARD -->
+<section class="page active" id="dashboard">
+  <div class="hero">
+    <div class="heroRow">
+      <div>
+        <div class="sub" id="dashDate"></div>
+        <h1 id="greeting">Good evening 👋</h1>
+        <div class="sub">Your study system is ready. Let's make today count.</div>
+        <div class="heroButtons">
+          <button class="btn primary" data-page-jump="chapters">Choose Chapters</button>
+          <button class="btn" data-page-jump="planner">View Plan</button>
+          <button class="btn" id="heroFocus">Focus Session</button>
         </div>
-
-        <div class="progress-number">
-          <span id="overallTaskText">0 / 0 tasks</span>
-          <strong id="overallPercentText">0%</strong>
+      </div>
+      <div class="ring" id="overallRing">
+        <div class="ringInner">
+          <b id="overallPct">0%</b>
+          <span class="sub">syllabus</span>
         </div>
-
       </div>
-
     </div>
-
-
-    <div class="panel">
-
-      <h2>Knowledge</h2>
-
-      <div class="knowledge-list">
-
-        <div class="knowledge-row">
-          <div class="knowledge-left">
-            <span class="dot hard"></span>
-            <span>Hard</span>
-          </div>
-          <strong id="hardCount">0</strong>
-        </div>
-
-        <div class="knowledge-row">
-          <div class="knowledge-left">
-            <span class="dot average"></span>
-            <span>Average</span>
-          </div>
-          <strong id="averageCount">0</strong>
-        </div>
-
-        <div class="knowledge-row">
-          <div class="knowledge-left">
-            <span class="dot easy"></span>
-            <span>Easy</span>
-          </div>
-          <strong id="easyCount">0</strong>
-        </div>
-
-      </div>
-
-    </div>
-
   </div>
 
-
-  <!-- REVISION -->
-
-  <div class="panel revision">
-
-    <h2>Revision Cycle 🔁</h2>
-
-    <div class="revision-row">
-      <div class="revision-left">
-        <span class="dot" style="background:#8c68e8"></span>
-        <span>Initial learning</span>
-      </div>
-      <strong>Day 1</strong>
+  <div class="grid stats">
+    <div class="card stat">
+      <div class="statTop"><span class="sub">Study time</span><div class="statIcon">◷</div></div>
+      <div class="statValue" id="studyTime">0h 0m</div>
+      <div class="sub">today</div>
     </div>
-
-    <div class="revision-row">
-      <div class="revision-left">
-        <span class="dot" style="background:#198bd2"></span>
-        <span>Quick recall</span>
-      </div>
-      <strong>Day 3</strong>
+    <div class="card stat">
+      <div class="statTop"><span class="sub">Streak</span><div class="statIcon">🔥</div></div>
+      <div class="statValue" id="streak">0 days</div>
+      <div class="sub">keep it alive</div>
     </div>
-
-    <div class="revision-row">
-      <div class="revision-left">
-        <span class="dot" style="background:#20c86b"></span>
-        <span>Practice / PYQs</span>
-      </div>
-      <strong>Day 7</strong>
+    <div class="card stat">
+      <div class="statTop"><span class="sub">XP</span><div class="statIcon">⚡</div></div>
+      <div class="statValue" id="xp">0</div>
+      <div class="sub" id="levelText">Level 1</div>
     </div>
-
-    <div class="revision-row">
-      <div class="revision-left">
-        <span class="dot" style="background:#ffd928"></span>
-        <span>Test + errors</span>
-      </div>
-      <strong>Day 14</strong>
+    <div class="card stat">
+      <div class="statTop"><span class="sub">Tasks</span><div class="statIcon">✓</div></div>
+      <div class="statValue" id="taskCount">0/0</div>
+      <div class="sub">today</div>
     </div>
-
   </div>
 
+  <div class="dashboardGrid">
+    <div class="card">
+      <div class="sectionHead" style="margin-top:0">
+        <div><h2>Today's Mission</h2><div class="sub">Your highest-priority work</div></div>
+        <span class="badge" id="todayProgress">0%</span>
+      </div>
+      <div id="todayTasks"></div>
+    </div>
 
-  <!-- PLAN -->
-
-  <div style="margin-top:28px">
-
-    <h2>📚 Your Daily Preparation</h2>
-
-    <p class="subtitle">
-      Tap the circle beside a task when you finish it. Your progress is
-      automatically saved.
-    </p>
-
-    <div id="planContainer" class="plan-container"></div>
-
+    <div class="card">
+      <div class="sectionHead" style="margin-top:0">
+        <div><h2>Chapter Progress</h2><div class="sub">Where you stand</div></div>
+        <button class="btn" data-page-jump="chapters">Manage</button>
+      </div>
+      <div id="subjectProgress"></div>
+    </div>
   </div>
 
+  <div class="dashboardGrid">
+    <div class="card">
+      <div class="sectionHead" style="margin-top:0">
+        <div><h2>Weekly Activity</h2><div class="sub">Study time over the last 7 days</div></div>
+      </div>
+      <div class="chart" id="dashChart"></div>
+    </div>
 
-  <div class="actions">
+    <div class="card">
+      <div class="sectionHead" style="margin-top:0">
+        <div><h2>Needs Attention</h2><div class="sub">Chapters with high priority</div></div>
+      </div>
+      <div id="weakList"></div>
+    </div>
+  </div>
+</section>
 
-    <button class="btn primary" onclick="sharePlan()">
-      📤 Share Plan
-    </button>
-
-    <button class="btn secondary" onclick="copyPlan()">
-      📋 Copy Plan
-    </button>
-
-    <button class="btn secondary" onclick="savePlan()">
-      ⬇ Save Plan
-    </button>
-
-    <button class="btn danger" onclick="resetApp()">
-      Reset
-    </button>
-
+<!-- CHAPTERS -->
+<section class="page" id="chapters">
+  <div class="sectionHead" style="margin-top:0">
+    <div>
+      <h1>Chapter Library</h1>
+      <div class="sub">Choose exactly what you need to study. No manual chapter typing required.</div>
+    </div>
+    <button class="btn primary" id="addChapterBtn">+ Custom Chapter</button>
   </div>
 
-  <div class="notice">
-    One completed block at a time. You don't need to finish the whole
-    syllabus today. 🔥
+  <div class="card">
+    <div class="setupGrid">
+      <div>
+        <label class="smallLabel">Country</label>
+        <select id="countrySelect"></select>
+      </div>
+      <div>
+        <label class="smallLabel">Education / Exam</label>
+        <select id="curriculumSelect"></select>
+      </div>
+      <div>
+        <label class="smallLabel">Subject</label>
+        <select id="subjectSelect"></select>
+      </div>
+      <div>
+        <label class="smallLabel">Search</label>
+        <input id="chapterSearch" placeholder="Search chapters...">
+      </div>
+    </div>
   </div>
 
+  <div class="sectionHead">
+    <div>
+      <h2>Select Chapters</h2>
+      <div class="sub"><span id="selectedCount">0</span> selected</div>
+    </div>
+    <button class="btn success" id="generateFromChapters">Generate Smart Plan</button>
+  </div>
+
+  <div class="chapterGrid" id="chapterGrid"></div>
+</section>
+
+<!-- PLANNER -->
+<section class="page" id="planner">
+  <div class="sectionHead" style="margin-top:0">
+    <div>
+      <h1>Smart Planner</h1>
+      <div class="sub">A plan built around your workload, difficulty and exam date.</div>
+    </div>
+    <button class="btn primary" id="regeneratePlan">Regenerate</button>
+  </div>
+
+  <div class="card">
+    <div class="planToolbar">
+      <div><label class="smallLabel">Daily study hours</label><input type="number" id="dailyHours" min="1" max="16" value="5"></div>
+      <div><label class="smallLabel">Plan start</label><input type="date" id="planStart"></div>
+      <div><label class="smallLabel">Sessions/day</label><input type="number" id="sessionsDay" min="1" max="10" value="3"></div>
+      <div><label class="smallLabel">Include revision</label><select id="includeRevision"><option value="yes">Yes</option><option value="no">No</option></select></div>
+    </div>
+  </div>
+
+  <div id="planOutput" style="margin-top:15px"></div>
+</section>
+
+<!-- REVISION -->
+<section class="page" id="revision">
+  <div class="sectionHead" style="margin-top:0">
+    <div><h1>Revision Queue</h1><div class="sub">Spaced revision keeps old chapters alive.</div></div>
+  </div>
+  <div class="grid stats">
+    <div class="card stat"><div class="sub">Due today</div><div class="statValue" id="dueToday">0</div><div class="sub">reviews</div></div>
+    <div class="card stat"><div class="sub">Upcoming</div><div class="statValue" id="upcomingReviews">0</div><div class="sub">scheduled</div></div>
+    <div class="card stat"><div class="sub">Mastered</div><div class="statValue" id="masteredCount">0</div><div class="sub">chapters</div></div>
+    <div class="card stat"><div class="sub">Weak</div><div class="statValue" id="weakCount">0</div><div class="sub">chapters</div></div>
+  </div>
+  <div class="card" style="margin-top:15px">
+    <div id="revisionList"></div>
+  </div>
+</section>
+
+<!-- MIND MAP -->
+<section class="page" id="mindmap">
+  <div class="sectionHead" style="margin-top:0">
+    <div><h1>Concept Mind Maps</h1><div class="sub">Turn a chapter into a visual revision map.</div></div>
+    <select id="mindMapSelect" style="width:300px"></select>
+  </div>
+  <div class="mapShell">
+    <div class="map" id="mindMap"></div>
+  </div>
+</section>
+
+<!-- FOCUS -->
+<section class="page" id="focus">
+  <div class="card focusBox">
+    <div class="sub">FOCUS MODE</div>
+    <h1>Deep Work Session</h1>
+    <div class="sub">Choose a task and disappear into the work.</div>
+
+    <div style="max-width:400px;margin:25px auto 0">
+      <label class="smallLabel">What are you studying?</label>
+      <select id="focusChapter"></select>
+    </div>
+
+    <div class="timerRing">
+      <div class="timer" id="timer">45:00</div>
+    </div>
+
+    <div class="timerBtns">
+      <button class="btn" data-min="25">25m</button>
+      <button class="btn" data-min="45">45m</button>
+      <button class="btn" data-min="60">60m</button>
+      <button class="btn" id="customTimer">Custom</button>
+    </div>
+
+    <div style="margin-top:18px" class="timerBtns">
+      <button class="btn primary" id="startTimer">Start</button>
+      <button class="btn" id="pauseTimer">Pause</button>
+      <button class="btn danger" id="resetTimer">Reset</button>
+    </div>
+  </div>
+</section>
+
+<!-- ANALYTICS -->
+<section class="page" id="analytics">
+  <div class="sectionHead" style="margin-top:0">
+    <div><h1>Analytics</h1><div class="sub">Understand your study patterns.</div></div>
+  </div>
+  <div class="grid stats">
+    <div class="card stat"><div class="sub">Total study</div><div class="statValue" id="totalStudy">0h</div><div class="sub">tracked</div></div>
+    <div class="card stat"><div class="sub">Completed tasks</div><div class="statValue" id="completedTotal">0</div><div class="sub">all time</div></div>
+    <div class="card stat"><div class="sub">Completion rate</div><div class="statValue" id="completionRate">0%</div><div class="sub">tasks</div></div>
+    <div class="card stat"><div class="sub">Average/day</div><div class="statValue" id="averageStudy">0m</div><div class="sub">last 7 days</div></div>
+  </div>
+  <div class="dashboardGrid" style="margin-top:15px">
+    <div class="card"><h2>Study Activity</h2><div class="chart" id="analyticsChart"></div></div>
+    <div class="card"><h2>Subject Distribution</h2><div id="subjectAnalytics" style="margin-top:18px"></div></div>
+  </div>
+</section>
+
+<!-- CALENDAR -->
+<section class="page" id="calendar">
+  <div class="sectionHead" style="margin-top:0">
+    <div><h1>Study Calendar</h1><div class="sub">See your workload across the month.</div></div>
+    <div>
+      <button class="btn" id="prevMonth">←</button>
+      <button class="btn" id="nextMonth">→</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2 id="calendarTitle" style="margin-bottom:15px"></h2>
+    <div class="calendar" id="calendarGrid"></div>
+  </div>
+</section>
+
+<!-- GOALS -->
+<section class="page" id="goals">
+  <div class="sectionHead" style="margin-top:0">
+    <div><h1>Goals & Exams</h1><div class="sub">Track the deadlines that matter.</div></div>
+    <button class="btn primary" id="addGoal">+ Add Exam</button>
+  </div>
+  <div id="goalsList"></div>
+</section>
+
+<!-- NOTES -->
+<section class="page" id="notes">
+  <div class="sectionHead" style="margin-top:0">
+    <div><h1>Study Notes</h1><div class="sub">Keep your personal knowledge inside PrepLuma.</div></div>
+    <button class="btn primary" id="saveNote">Save Note</button>
+  </div>
+  <div class="card">
+    <div class="formGrid">
+      <div><label class="smallLabel">Title</label><input id="noteTitle" placeholder="e.g. Current Electricity mistakes"></div>
+      <div><label class="smallLabel">Chapter</label><select id="noteChapter"></select></div>
+      <div class="full"><label class="smallLabel">Notes</label><textarea id="noteBody" placeholder="Write concepts, mistakes, questions, shortcuts..."></textarea></div>
+    </div>
+  </div>
+  <div class="sectionHead"><h2>Saved Notes</h2></div>
+  <div id="notesList"></div>
+</section>
+
+<!-- SETTINGS -->
+<section class="page" id="settings">
+  <div class="sectionHead" style="margin-top:0">
+    <div><h1>Settings</h1><div class="sub">Personalize your PrepLuma workspace.</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Profile</h2>
+    <div class="formGrid" style="margin-top:15px">
+      <div><label class="smallLabel">Your name</label><input id="profileName" placeholder="Student"></div>
+      <div><label class="smallLabel">Learning goal</label><input id="profileGoal" placeholder="Crack my exam"></div>
+      <div><div class="sub">Country</div><b id="settingCountry">—</b></div>
+      <div><div class="sub">Curriculum</div><b id="settingCurriculum">—</b></div>
+    </div>
+    <button class="btn primary" id="saveProfile" style="margin-top:15px">Save Profile</button>
+  </div>
+
+  <div class="dashboardGrid">
+    <div class="card">
+      <h2>Data</h2>
+      <div class="sub" style="margin:8px 0 15px">Back up your complete PrepLuma workspace.</div>
+      <button class="btn" id="exportData">Export Backup</button>
+      <button class="btn" id="importDataBtn">Import Backup</button>
+      <input type="file" id="importData" accept=".json" hidden>
+    </div>
+    <div class="card">
+      <h2>Danger Zone</h2>
+      <div class="sub" style="margin:8px 0 15px">Reset all local PrepLuma data.</div>
+      <button class="btn danger" id="resetAll">Reset Everything</button>
+    </div>
+  </div>
 </section>
 
 </div>
+</main>
+</div>
 
+<!-- MOBILE NAV -->
+<div class="mobileNav">
+  <button data-page="dashboard">⌂<br>Home</button>
+  <button data-page="chapters">▤<br>Chapters</button>
+  <button data-page="planner">▣<br>Plan</button>
+  <button data-page="focus">◷<br>Focus</button>
+  <button data-page="analytics">◒<br>Stats</button>
+</div>
+
+<!-- CUSTOM CHAPTER MODAL -->
+<div class="modal" id="chapterModal">
+  <div class="modalBox">
+    <div class="modalHead">
+      <h2>Add Custom Chapter</h2>
+      <button class="iconBtn" data-close="chapterModal">✕</button>
+    </div>
+    <div class="formGrid">
+      <div><label class="smallLabel">Subject</label><input id="customSubject" placeholder="Physics"></div>
+      <div><label class="smallLabel">Chapter</label><input id="customChapter" placeholder="My Chapter"></div>
+      <div class="full"><label class="smallLabel">Concepts</label><input id="customConcepts" placeholder="Concept 1, Concept 2, Concept 3"></div>
+    </div>
+    <button class="btn primary" id="saveCustomChapter" style="margin-top:15px">Add Chapter</button>
+  </div>
+</div>
+
+<!-- GOAL MODAL -->
+<div class="modal" id="goalModal">
+  <div class="modalBox">
+    <div class="modalHead">
+      <h2>Add Exam / Goal</h2>
+      <button class="iconBtn" data-close="goalModal">✕</button>
+    </div>
+    <div class="formGrid">
+      <div><label class="smallLabel">Exam name</label><input id="goalName" placeholder="JEE Main"></div>
+      <div><label class="smallLabel">Date</label><input id="goalDate" type="date"></div>
+      <div><label class="smallLabel">Target score</label><input id="goalScore" placeholder="95%"></div>
+      <div><label class="smallLabel">Priority</label><select id="goalPriority"><option>High</option><option>Medium</option><option>Low</option></select></div>
+    </div>
+    <button class="btn primary" id="saveGoal" style="margin-top:15px">Add Goal</button>
+  </div>
+</div>
 
 <script>
+/* =========================================================
+   PREPLUMA V22
+   Self-contained study OS
+========================================================= */
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+const todayISO = () => new Date().toISOString().slice(0,10);
+
+const uid = () => Math.random().toString(36).slice(2)+Date.now().toString(36);
+
+const defaultData = {
+  profile:{
+    name:"Student",
+    country:"India",
+    curriculum:"JEE Main",
+    goal:"Complete my syllabus"
+  },
+  chapters:[],
+  tasks:[],
+  plan:[],
+  notes:[],
+  goals:[],
+  studyLog:{},
+  xp:0,
+  streak:0,
+  lastStudy:null,
+  theme:"dark"
+};
+
+let data = JSON.parse(localStorage.getItem("prepluma_v22") || "null") || defaultData;
+
+function save(){
+  localStorage.setItem("prepluma_v22",JSON.stringify(data));
+}
+
+function dateObj(date=todayISO()){
+  return new Date(date+"T00:00:00");
+}
+
+function addDays(date,n){
+  const d=dateObj(date);
+  d.setDate(d.getDate()+n);
+  return d.toISOString().slice(0,10);
+}
+
+function esc(str){
+  return String(str??"").replace(/[&<>"']/g,m=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
 
 /* =========================================================
-   STUDYFORGE V6
+   CURRICULUM DATABASE
 ========================================================= */
 
 const DB = {
-
-  India: {
-
-    "JEE Main": {
-      description:"Engineering entrance preparation with Physics, Chemistry and Mathematics.",
-      subjects:{
-        Physics:[
-          "Units & Dimensions",
-          "Kinematics",
-          "Laws of Motion",
-          "Work, Energy & Power",
-          "Rotational Motion",
-          "Gravitation",
-          "Properties of Solids & Fluids",
-          "Thermodynamics",
-          "Kinetic Theory",
-          "Oscillations",
-          "Waves",
-          "Electrostatics",
-          "Current Electricity",
-          "Magnetic Effects of Current",
-          "Electromagnetic Induction",
-          "Alternating Current",
-          "Ray Optics",
-          "Wave Optics",
-          "Dual Nature",
-          "Atoms & Nuclei",
-          "Semiconductors"
-        ],
-        Chemistry:[
-          "Some Basic Concepts of Chemistry",
-          "Atomic Structure",
-          "Chemical Bonding",
-          "States of Matter",
-          "Thermodynamics",
-          "Equilibrium",
-          "Redox Reactions",
-          "Solutions",
-          "Electrochemistry",
-          "Chemical Kinetics",
-          "Periodic Classification",
-          "p-Block Elements",
-          "d- and f-Block Elements",
-          "Coordination Compounds",
-          "General Organic Chemistry",
-          "Hydrocarbons",
-          "Haloalkanes & Haloarenes",
-          "Alcohols, Phenols & Ethers",
-          "Aldehydes, Ketones & Carboxylic Acids",
-          "Amines",
-          "Biomolecules"
-        ],
-        Mathematics:[
-          "Sets, Relations & Functions",
-          "Complex Numbers",
-          "Quadratic Equations",
-          "Sequences & Series",
-          "Permutations & Combinations",
-          "Binomial Theorem",
-          "Straight Lines",
-          "Circles",
-          "Conic Sections",
-          "Limits",
-          "Continuity & Differentiability",
-          "Application of Derivatives",
-          "Integrals",
-          "Differential Equations",
-          "Matrices",
-          "Determinants",
-          "Vectors",
-          "3D Geometry",
-          "Probability",
-          "Statistics",
-          "Trigonometry"
-        ]
-      }
+  India:{
+    "JEE Main":{
+      Physics:[
+        ["Units & Measurements",["SI Units","Dimensions","Errors"]],
+        ["Kinematics",["Motion in 1D","Motion in 2D","Projectile Motion"]],
+        ["Laws of Motion",["Newton's Laws","Friction","Circular Motion"]],
+        ["Work, Energy & Power",["Work","Kinetic Energy","Potential Energy","Power"]],
+        ["Rotational Motion",["Torque","Angular Momentum","Moment of Inertia"]],
+        ["Gravitation",["Gravitational Field","Potential","Satellites"]],
+        ["Thermodynamics",["Laws of Thermodynamics","Heat Engines","Entropy"]],
+        ["Oscillations",["SHM","Energy in SHM","Pendulum"]],
+        ["Waves",["Wave Motion","Sound Waves","Standing Waves"]],
+        ["Electrostatics",["Electric Charges","Electric Field","Gauss Law","Potential"]],
+        ["Current Electricity",["Drift Velocity","Ohm's Law","Kirchhoff Laws","Cells"]],
+        ["Magnetic Effects of Current",["Biot-Savart","Ampere Law","Lorentz Force"]],
+        ["Electromagnetic Induction",["Faraday Law","Lenz Law","Inductance"]],
+        ["Alternating Current",["AC Circuits","Reactance","Resonance"]],
+        ["Ray Optics",["Reflection","Refraction","Lenses"]],
+        ["Wave Optics",["Interference","Diffraction","Polarisation"]],
+        ["Modern Physics",["Photoelectric Effect","Atoms","Nuclei"]],
+        ["Semiconductor Electronics",["Diodes","Transistors","Logic Gates"]]
+      ],
+      Chemistry:[
+        ["Some Basic Concepts of Chemistry",["Mole Concept","Stoichiometry","Concentration"]],
+        ["Atomic Structure",["Bohr Model","Quantum Numbers","Electronic Configuration"]],
+        ["Chemical Bonding",["VSEPR","Hybridisation","Molecular Orbital Theory"]],
+        ["Thermodynamics",["Enthalpy","Entropy","Gibbs Energy"]],
+        ["Equilibrium",["Chemical Equilibrium","Ionic Equilibrium","pH"]],
+        ["Redox Reactions",["Oxidation","Reduction","Balancing"]],
+        ["Solutions",["Concentration","Raoult's Law","Colligative Properties"]],
+        ["Electrochemistry",["Cells","Nernst Equation","Conductance"]],
+        ["Chemical Kinetics",["Rate Law","Order","Arrhenius Equation"]],
+        ["Coordination Compounds",["Ligands","Nomenclature","CFT"]],
+        ["Organic Chemistry Basics",["IUPAC","Isomerism","Reaction Mechanisms"]],
+        ["Hydrocarbons",["Alkanes","Alkenes","Alkynes","Aromatic Compounds"]]
+      ],
+      Mathematics:[
+        ["Sets, Relations & Functions",["Sets","Relations","Functions"]],
+        ["Complex Numbers",["Argand Plane","Algebra","Modulus"]],
+        ["Quadratic Equations",["Roots","Nature of Roots","Equations"]],
+        ["Matrices & Determinants",["Matrices","Determinants","Inverse"]],
+        ["Sequences & Series",["AP","GP","Special Series"]],
+        ["Limits, Continuity & Differentiability",["Limits","Continuity","Differentiability"]],
+        ["Application of Derivatives",["Monotonicity","Maxima","Minima"]],
+        ["Integral Calculus",["Indefinite Integral","Definite Integral","Area"]],
+        ["Differential Equations",["Formation","Variable Separation","Linear DE"]],
+        ["Coordinate Geometry",["Straight Lines","Circles","Conics"]],
+        ["Vectors & 3D Geometry",["Vectors","Lines","Planes"]],
+        ["Probability",["Probability","Conditional Probability","Bayes"]],
+        ["Statistics",["Mean","Variance","Standard Deviation"]]
+      ]
     },
-
-    "MHT-CET": {
-      description:"Maharashtra engineering entrance preparation.",
-      subjects:{
-        Physics:[
-          "Measurements",
-          "Vectors",
-          "Kinematics",
-          "Laws of Motion",
-          "Gravitation",
-          "Mechanical Properties",
-          "Thermal Properties",
-          "Thermodynamics",
-          "Oscillations",
-          "Waves",
-          "Electrostatics",
-          "Current Electricity",
-          "Magnetism",
-          "Electromagnetic Induction",
-          "Alternating Current",
-          "Optics",
-          "Dual Nature",
-          "Atoms & Nuclei",
-          "Semiconductors"
-        ],
-        Chemistry:[
-          "Basic Concepts",
-          "Structure of Atom",
-          "Chemical Bonding",
-          "Redox Reactions",
-          "States of Matter",
-          "Thermodynamics",
-          "Equilibrium",
-          "Solutions",
-          "Electrochemistry",
-          "Chemical Kinetics",
-          "Organic Chemistry Basics",
-          "Hydrocarbons",
-          "Haloalkanes",
-          "Alcohols & Phenols",
-          "Aldehydes & Ketones",
-          "Amines",
-          "Biomolecules",
-          "Polymers",
-          "Coordination Compounds"
-        ],
-        Mathematics:[
-          "Mathematical Logic",
-          "Matrices",
-          "Trigonometric Functions",
-          "Pair of Straight Lines",
-          "Circle",
-          "Conics",
-          "Vectors",
-          "Three Dimensional Geometry",
-          "Probability",
-          "Statistics",
-          "Limits",
-          "Continuity",
-          "Differentiation",
-          "Applications of Derivatives",
-          "Integration",
-          "Differential Equations"
-        ]
-      }
-    },
-
-    "NEET": {
-      description:"Medical entrance preparation.",
-      subjects:{
-        Physics:[
-          "Units & Measurements",
-          "Motion in a Straight Line",
-          "Motion in a Plane",
-          "Laws of Motion",
-          "Work Energy & Power",
-          "System of Particles",
-          "Gravitation",
-          "Thermal Properties",
-          "Thermodynamics",
-          "Kinetic Theory",
-          "Oscillations",
-          "Waves",
-          "Electric Charges & Fields",
-          "Electrostatic Potential",
-          "Current Electricity",
-          "Moving Charges & Magnetism",
-          "Electromagnetic Induction",
-          "Alternating Current",
-          "Ray Optics",
-          "Wave Optics",
-          "Atoms",
-          "Nuclei",
-          "Semiconductors"
-        ],
-        Chemistry:[
-          "Some Basic Concepts",
-          "Atomic Structure",
-          "Periodic Table",
-          "Chemical Bonding",
-          "Thermodynamics",
-          "Equilibrium",
-          "Redox Reactions",
-          "Solutions",
-          "Electrochemistry",
-          "Chemical Kinetics",
-          "Coordination Compounds",
-          "Organic Chemistry Basics",
-          "Hydrocarbons",
-          "Haloalkanes",
-          "Alcohols Phenols Ethers",
-          "Aldehydes Ketones Acids",
-          "Amines",
-          "Biomolecules"
-        ],
-        Biology:[
-          "The Living World",
-          "Biological Classification",
-          "Plant Kingdom",
-          "Animal Kingdom",
-          "Morphology of Flowering Plants",
-          "Anatomy of Flowering Plants",
-          "Cell Structure",
-          "Biomolecules",
-          "Cell Cycle",
-          "Photosynthesis",
-          "Respiration in Plants",
-          "Plant Growth",
-          "Human Physiology",
-          "Reproduction",
-          "Genetics",
-          "Evolution",
-          "Human Health & Disease",
-          "Biotechnology",
-          "Ecology",
-          "Biodiversity"
-        ]
-      }
-    },
-
-    "CBSE Class 12": {
-      description:"Senior secondary academic preparation.",
-      subjects:{
-        Physics:[
-          "Electric Charges & Fields",
-          "Electrostatic Potential",
-          "Current Electricity",
-          "Moving Charges & Magnetism",
-          "Electromagnetic Induction",
-          "Alternating Current",
-          "Electromagnetic Waves",
-          "Ray Optics",
-          "Wave Optics",
-          "Dual Nature",
-          "Atoms",
-          "Nuclei",
-          "Semiconductor Electronics"
-        ],
-        Chemistry:[
-          "Solutions",
-          "Electrochemistry",
-          "Chemical Kinetics",
-          "d and f Block Elements",
-          "Coordination Compounds",
-          "Haloalkanes & Haloarenes",
-          "Alcohols Phenols & Ethers",
-          "Aldehydes Ketones & Carboxylic Acids",
-          "Amines",
-          "Biomolecules"
-        ],
-        Mathematics:[
-          "Relations & Functions",
-          "Inverse Trigonometric Functions",
-          "Matrices",
-          "Determinants",
-          "Continuity & Differentiability",
-          "Applications of Derivatives",
-          "Integrals",
-          "Application of Integrals",
-          "Differential Equations",
-          "Vectors",
-          "Three Dimensional Geometry",
-          "Linear Programming",
-          "Probability"
-        ]
-      }
+    "CBSE Class 12":{
+      Physics:[
+        ["Electric Charges and Fields",["Charge","Electric Field","Gauss Law"]],
+        ["Electrostatic Potential and Capacitance",["Potential","Capacitors","Energy"]],
+        ["Current Electricity",["Current","Resistance","Kirchhoff Laws"]],
+        ["Moving Charges and Magnetism",["Magnetic Field","Force","Motion"]],
+        ["Electromagnetic Induction",["Faraday Law","Lenz Law","Inductance"]],
+        ["Alternating Current",["AC","LCR Circuit","Transformer"]],
+        ["Ray Optics",["Reflection","Refraction","Optical Instruments"]],
+        ["Wave Optics",["Interference","Diffraction","Polarisation"]],
+        ["Dual Nature of Radiation and Matter",["Photoelectric Effect","de Broglie"]],
+        ["Atoms and Nuclei",["Atomic Models","Nuclear Physics"]],
+        ["Semiconductor Electronics",["Diodes","Transistors","Logic Gates"]]
+      ],
+      Mathematics:[
+        ["Relations and Functions",["Relations","Functions","Composition"]],
+        ["Inverse Trigonometric Functions",["Principal Values","Identities"]],
+        ["Matrices",["Types","Operations","Inverse"]],
+        ["Determinants",["Properties","Area","Linear Equations"]],
+        ["Continuity and Differentiability",["Continuity","Differentiability","Chain Rule"]],
+        ["Application of Derivatives",["Increasing","Decreasing","Extrema"]],
+        ["Integrals",["Indefinite","Definite","Properties"]],
+        ["Application of Integrals",["Area Under Curves"]],
+        ["Differential Equations",["Order","Degree","Solutions"]],
+        ["Vector Algebra",["Vectors","Dot Product","Cross Product"]],
+        ["Three Dimensional Geometry",["Lines","Planes","Distance"]],
+        ["Probability",["Conditional Probability","Bayes","Random Variables"]]
+      ],
+      Chemistry:[
+        ["Solutions",["Concentration","Colligative Properties"]],
+        ["Electrochemistry",["Cells","Nernst Equation","Conductance"]],
+        ["Chemical Kinetics",["Rate","Order","Arrhenius"]],
+        ["d and f Block Elements",["Properties","Compounds"]],
+        ["Coordination Compounds",["Ligands","CFT","Isomerism"]],
+        ["Haloalkanes and Haloarenes",["Preparation","Reactions"]],
+        ["Alcohols, Phenols and Ethers",["Preparation","Reactions"]],
+        ["Aldehydes, Ketones and Carboxylic Acids",["Carbonyl Chemistry"]],
+        ["Amines",["Basicity","Reactions","Diazonium Salts"]],
+        ["Biomolecules",["Carbohydrates","Proteins","Vitamins"]]
+      ]
     }
-
   },
 
-  USA: {
-
-    "SAT": {
-      description:"College admission test preparation.",
-      subjects:{
-        Mathematics:[
-          "Algebra",
-          "Advanced Math",
-          "Problem Solving & Data Analysis",
-          "Geometry & Trigonometry"
-        ],
-        "Reading & Writing":[
-          "Central Ideas",
-          "Inference",
-          "Words in Context",
-          "Text Structure",
-          "Transitions",
-          "Grammar",
-          "Punctuation",
-          "Rhetorical Synthesis"
-        ]
-      }
+  USA:{
+    "High School":{
+      Mathematics:[
+        ["Algebra",["Equations","Functions","Polynomials"]],
+        ["Geometry",["Proofs","Triangles","Circles"]],
+        ["Trigonometry",["Identities","Graphs","Applications"]],
+        ["Statistics",["Data","Probability","Distributions"]],
+        ["Calculus",["Limits","Derivatives","Integrals"]]
+      ],
+      Science:[
+        ["Physics",["Motion","Forces","Energy"]],
+        ["Chemistry",["Atoms","Bonding","Reactions"]],
+        ["Biology",["Cells","Genetics","Ecology"]]
+      ]
     },
-
-    "ACT": {
-      description:"College admission test preparation.",
-      subjects:{
-        Mathematics:[
-          "Pre-Algebra",
-          "Elementary Algebra",
-          "Intermediate Algebra",
-          "Coordinate Geometry",
-          "Plane Geometry",
-          "Trigonometry",
-          "Statistics & Probability"
-        ],
-        English:[
-          "Production of Writing",
-          "Knowledge of Language",
-          "Conventions of Standard English"
-        ],
-        Science:[
-          "Data Representation",
-          "Research Summaries",
-          "Conflicting Viewpoints"
-        ]
-      }
-    },
-
-    "AP Physics 1": {
-      description:"Introductory algebra-based college physics.",
-      subjects:{
-        Physics:[
-          "Kinematics",
-          "Force & Translational Motion",
-          "Work Energy & Power",
-          "Linear Momentum",
-          "Torque & Rotational Motion",
-          "Energy & Momentum of Rotating Systems",
-          "Oscillations"
-        ]
-      }
-    },
-
-    "AP Chemistry": {
-      description:"Introductory college chemistry.",
-      subjects:{
-        Chemistry:[
-          "Atomic Structure",
-          "Molecular & Ionic Compound Structure",
-          "Intermolecular Forces",
-          "Chemical Reactions",
-          "Kinetics",
-          "Thermodynamics",
-          "Equilibrium",
-          "Acids & Bases",
-          "Applications of Thermodynamics"
-        ]
-      }
-    },
-
-    "AP Biology": {
-      description:"Introductory college biology.",
-      subjects:{
-        Biology:[
-          "Chemistry of Life",
-          "Cell Structure",
-          "Cellular Energetics",
-          "Cell Communication",
-          "Heredity",
-          "Gene Expression",
-          "Natural Selection",
-          "Ecology"
-        ]
-      }
-    },
-
-    "AP Calculus AB": {
-      description:"College-level introductory calculus.",
-      subjects:{
-        Mathematics:[
-          "Limits & Continuity",
-          "Differentiation",
-          "Applications of Differentiation",
-          "Integration",
-          "Differential Equations",
-          "Applications of Integration"
-        ]
-      }
+    "AP Calculus":{
+      Mathematics:[
+        ["Limits and Continuity",["Limits","Continuity","Asymptotes"]],
+        ["Differentiation",["Derivative Rules","Implicit Differentiation","Applications"]],
+        ["Integration",["Antiderivatives","Definite Integrals","FTC"]],
+        ["Differential Equations",["Slope Fields","Separation","Models"]],
+        ["Applications of Integration",["Area","Volume","Motion"]]
+      ]
     }
-
   },
 
-  UK: {
-
-    "A-Level Mathematics":{
-      description:"Advanced secondary mathematics preparation.",
-      subjects:{
-        Mathematics:[
-          "Proof",
-          "Algebra & Functions",
-          "Coordinate Geometry",
-          "Sequences & Series",
-          "Trigonometry",
-          "Exponentials & Logarithms",
-          "Differentiation",
-          "Integration",
-          "Numerical Methods",
-          "Vectors",
-          "Statistics",
-          "Mechanics"
-        ]
-      }
+  UK:{
+    "A-Level":{
+      Mathematics:[
+        ["Algebra",["Functions","Sequences","Series"]],
+        ["Coordinate Geometry",["Lines","Circles","Parametric Equations"]],
+        ["Trigonometry",["Identities","Equations","Graphs"]],
+        ["Differentiation",["Rules","Applications","Numerical Methods"]],
+        ["Integration",["Methods","Area","Differential Equations"]],
+        ["Probability & Statistics",["Distributions","Hypothesis Testing"]]
+      ],
+      Physics:[
+        ["Mechanics",["Motion","Forces","Energy"]],
+        ["Electricity",["Circuits","Current","Resistance"]],
+        ["Waves",["Wave Properties","Interference","Diffraction"]],
+        ["Fields",["Gravitational","Electric","Magnetic"]]
+      ]
     },
-
-    "A-Level Physics":{
-      description:"Advanced secondary physics preparation.",
-      subjects:{
-        Physics:[
-          "Measurements",
-          "Mechanics",
-          "Materials",
-          "Waves",
-          "Electricity",
-          "Particle Physics",
-          "Thermal Physics",
-          "Fields",
-          "Nuclear Physics",
-          "Astrophysics"
-        ]
-      }
-    },
-
-    "A-Level Chemistry":{
-      description:"Advanced secondary chemistry preparation.",
-      subjects:{
-        Chemistry:[
-          "Atomic Structure",
-          "Amount of Substance",
-          "Bonding",
-          "Energetics",
-          "Kinetics",
-          "Equilibria",
-          "Redox",
-          "Organic Chemistry",
-          "Analysis",
-          "Periodic Trends"
-        ]
-      }
-    },
-
-    "GCSE Mathematics":{
-      description:"Secondary school mathematics preparation.",
-      subjects:{
-        Mathematics:[
-          "Number",
-          "Algebra",
-          "Ratio & Proportion",
-          "Geometry",
-          "Probability",
-          "Statistics",
-          "Graphs",
-          "Vectors"
-        ]
-      }
+    "GCSE":{
+      Mathematics:[
+        ["Number",["Fractions","Percentages","Standard Form"]],
+        ["Algebra",["Equations","Graphs","Sequences"]],
+        ["Geometry",["Angles","Area","Volume"]],
+        ["Statistics",["Charts","Averages","Probability"]]
+      ]
     }
-
   },
 
-  Canada: {
-
-    "Canadian High School STEM":{
-      description:"General Canadian secondary STEM preparation.",
-      subjects:{
-        Mathematics:[
-          "Functions",
-          "Algebra",
-          "Trigonometry",
-          "Calculus",
-          "Vectors",
-          "Statistics"
-        ],
-        Physics:[
-          "Kinematics",
-          "Dynamics",
-          "Energy",
-          "Momentum",
-          "Electricity",
-          "Waves"
-        ],
-        Chemistry:[
-          "Matter",
-          "Chemical Reactions",
-          "Stoichiometry",
-          "Solutions",
-          "Organic Chemistry",
-          "Equilibrium"
-        ],
-        Biology:[
-          "Cell Biology",
-          "Genetics",
-          "Evolution",
-          "Homeostasis",
-          "Ecology"
-        ]
-      }
-    },
-
-    "Canadian University STEM":{
-      description:"General university STEM preparation.",
-      subjects:{
-        Mathematics:[
-          "Calculus",
-          "Linear Algebra",
-          "Differential Equations",
-          "Probability",
-          "Statistics"
-        ],
-        Physics:[
-          "Mechanics",
-          "Electricity & Magnetism",
-          "Thermodynamics",
-          "Waves",
-          "Modern Physics"
-        ],
-        Chemistry:[
-          "General Chemistry",
-          "Organic Chemistry",
-          "Physical Chemistry",
-          "Analytical Chemistry"
-        ]
-      }
+  Canada:{
+    "High School":{
+      Mathematics:[
+        ["Functions",["Linear","Quadratic","Polynomial"]],
+        ["Trigonometry",["Ratios","Identities","Applications"]],
+        ["Calculus",["Limits","Derivatives","Integrals"]],
+        ["Data Management",["Statistics","Probability"]]
+      ],
+      Science:[
+        ["Physics",["Dynamics","Energy","Electricity"]],
+        ["Chemistry",["Matter","Bonding","Reactions"]],
+        ["Biology",["Cells","Genetics","Evolution"]]
+      ]
     }
-
   },
 
-  Australia: {
-
-    "ATAR Mathematics":{
-      description:"Australian senior secondary mathematics preparation.",
-      subjects:{
-        Mathematics:[
-          "Functions",
-          "Algebra",
-          "Trigonometry",
-          "Calculus",
-          "Statistics",
-          "Probability"
-        ]
-      }
-    },
-
-    "ATAR Physics":{
-      description:"Australian senior secondary physics preparation.",
-      subjects:{
-        Physics:[
-          "Motion",
-          "Linear Momentum",
-          "Energy",
-          "Gravity",
-          "Electricity",
-          "Magnetism",
-          "Waves",
-          "Modern Physics"
-        ]
-      }
-    },
-
-    "ATAR Chemistry":{
-      description:"Australian senior secondary chemistry preparation.",
-      subjects:{
-        Chemistry:[
-          "Chemical Fundamentals",
-          "Molecular Structure",
-          "Chemical Reactions",
-          "Equilibrium",
-          "Acids & Bases",
-          "Organic Chemistry",
-          "Electrochemistry"
-        ]
-      }
+  Australia:{
+    "Senior Secondary":{
+      Mathematics:[
+        ["Functions",["Graphs","Transformations","Models"]],
+        ["Calculus",["Differentiation","Integration"]],
+        ["Statistics",["Data","Probability","Inference"]]
+      ],
+      Physics:[
+        ["Motion",["Kinematics","Dynamics"]],
+        ["Fields",["Gravitational","Electric","Magnetic"]],
+        ["Electricity",["Circuits","Energy"]]
+      ]
     }
-
   },
 
-  UAE: {
-
-    "UAE / CBSE STEM":{
-      description:"STEM preparation suitable for UAE students following common school pathways.",
-      subjects:{
-        Mathematics:[
-          "Algebra",
-          "Functions",
-          "Trigonometry",
-          "Calculus",
-          "Vectors",
-          "Probability"
-        ],
-        Physics:[
-          "Mechanics",
-          "Thermodynamics",
-          "Electricity",
-          "Magnetism",
-          "Optics",
-          "Modern Physics"
-        ],
-        Chemistry:[
-          "Atomic Structure",
-          "Bonding",
-          "Thermodynamics",
-          "Equilibrium",
-          "Organic Chemistry",
-          "Electrochemistry"
-        ]
-      }
-    },
-
-    "UAE American Curriculum":{
-      description:"General American-curriculum STEM preparation.",
-      subjects:{
-        Mathematics:[
-          "Algebra",
-          "Geometry",
-          "Trigonometry",
-          "Precalculus",
-          "Calculus",
-          "Statistics"
-        ],
-        Science:[
-          "Physics",
-          "Chemistry",
-          "Biology",
-          "Environmental Science"
-        ]
-      }
+  Germany:{
+    "Abitur":{
+      Mathematics:[
+        ["Analysis",["Functions","Derivatives","Integrals"]],
+        ["Analytic Geometry",["Vectors","Lines","Planes"]],
+        ["Stochastics",["Probability","Statistics"]]
+      ],
+      Physics:[
+        ["Mechanics",["Motion","Energy","Momentum"]],
+        ["Electrodynamics",["Fields","Circuits","Induction"]]
+      ]
     }
-
   },
 
-  International: {
-
-    "IB Diploma STEM":{
-      description:"General IB Diploma STEM preparation.",
-      subjects:{
-        Mathematics:[
-          "Algebra",
-          "Functions",
-          "Geometry",
-          "Trigonometry",
-          "Calculus",
-          "Statistics",
-          "Probability"
-        ],
-        Physics:[
-          "Mechanics",
-          "Thermal Physics",
-          "Waves",
-          "Electricity & Magnetism",
-          "Fields",
-          "Nuclear Physics"
-        ],
-        Chemistry:[
-          "Stoichiometric Relationships",
-          "Atomic Structure",
-          "Periodicity",
-          "Chemical Bonding",
-          "Energetics",
-          "Kinetics",
-          "Equilibrium",
-          "Acids & Bases",
-          "Organic Chemistry"
-        ],
-        Biology:[
-          "Cell Biology",
-          "Molecular Biology",
-          "Genetics",
-          "Ecology",
-          "Evolution",
-          "Human Physiology"
-        ]
-      }
-    },
-
-    "General STEM":{
-      description:"Flexible STEM planner for students whose exact curriculum is not listed.",
-      subjects:{
-        Mathematics:[
-          "Algebra",
-          "Functions",
-          "Geometry",
-          "Trigonometry",
-          "Calculus",
-          "Statistics",
-          "Probability"
-        ],
-        Physics:[
-          "Mechanics",
-          "Energy",
-          "Waves",
-          "Electricity",
-          "Magnetism",
-          "Modern Physics"
-        ],
-        Chemistry:[
-          "Atomic Structure",
-          "Bonding",
-          "Stoichiometry",
-          "Thermodynamics",
-          "Equilibrium",
-          "Organic Chemistry"
-        ],
-        Biology:[
-          "Cell Biology",
-          "Genetics",
-          "Evolution",
-          "Ecology",
-          "Human Biology"
-        ]
-      }
-    },
-
-    "General Academic":{
-      description:"Flexible planner for almost any academic subject.",
-      subjects:{
-        Mathematics:[
-          "Topic 1",
-          "Topic 2",
-          "Topic 3",
-          "Topic 4"
-        ],
-        Science:[
-          "Topic 1",
-          "Topic 2",
-          "Topic 3",
-          "Topic 4"
-        ],
-        English:[
-          "Reading",
-          "Writing",
-          "Grammar",
-          "Vocabulary"
-        ]
-      }
+  Singapore:{
+    "A-Level":{
+      Mathematics:[
+        ["Functions",["Functions","Graphs","Transformations"]],
+        ["Sequences & Series",["AP","GP","Binomial"]],
+        ["Calculus",["Differentiation","Integration"]],
+        ["Probability",["Random Variables","Distributions"]]
+      ],
+      Physics:[
+        ["Mechanics",["Kinematics","Dynamics","Energy"]],
+        ["Waves",["Oscillations","Interference"]],
+        ["Electricity & Magnetism",["Fields","Circuits","Induction"]]
+      ]
     }
+  },
 
+  UAE:{
+    "High School":{
+      Mathematics:[
+        ["Algebra",["Equations","Functions","Polynomials"]],
+        ["Geometry",["Shapes","Proofs","Coordinate Geometry"]],
+        ["Calculus",["Limits","Derivatives","Integrals"]]
+      ],
+      Science:[
+        ["Physics",["Mechanics","Electricity","Waves"]],
+        ["Chemistry",["Atoms","Bonding","Reactions"]],
+        ["Biology",["Cells","Genetics","Ecology"]]
+      ]
+    }
   }
-
 };
 
-
 /* =========================================================
-   STATE
+   CURRICULUM HELPERS
 ========================================================= */
 
-let state = {
-  step:1,
+function countries(){
+  return Object.keys(DB).concat(["Other / Custom"]);
+}
 
-  country:"",
-  exam:"",
+function curricula(country){
+  return country==="Other / Custom"
+    ? ["Custom Curriculum"]
+    : Object.keys(DB[country]||{});
+}
 
-  selectedSubjects:[],
+function subjects(country,curriculum){
+  if(country==="Other / Custom") return ["Custom Subject"];
+  return Object.keys(DB[country]?.[curriculum]||{});
+}
 
-  topics:[],
+function rawChapters(country,curriculum,subject){
+  if(country==="Other / Custom") return [];
+  return DB[country]?.[curriculum]?.[subject]||[];
+}
 
-  questionsSolved:5,
-  mockScore:40,
-  studyHours:4,
-  dailyQuestions:40,
+function makeChapter(subject,name,concepts=[],custom=false){
+  return {
+    id:uid(),
+    subject,
+    name,
+    concepts,
+    custom,
+    selected:false,
+    difficulty:"Average",
+    status:"Not Started",
+    progress:0,
+    created:new Date().toISOString(),
+    priority:"Medium",
+    estimatedDays:4,
+    nextReview:null,
+    reviewLevel:0
+  };
+}
 
-  examDate:"",
-  studyDays:6,
+function ensureDatabaseChapters(){
+  const country=data.profile.country;
+  const curriculum=data.profile.curriculum;
 
-  plan:[],
-  completed:{}
-};
+  if(country==="Other / Custom") return;
 
-const STORAGE_KEY = "studyforge_v6";
-
+  Object.entries(DB[country]?.[curriculum]||{}).forEach(([subject,list])=>{
+    list.forEach(([name,concepts])=>{
+      if(!data.chapters.some(c=>
+        c.subject===subject &&
+        c.name===name &&
+        c.sourceCountry===country &&
+        c.sourceCurriculum===curriculum
+      )){
+        const c=makeChapter(subject,name,concepts);
+        c.sourceCountry=country;
+        c.sourceCurriculum=curriculum;
+        data.chapters.push(c);
+      }
+    });
+  });
+}
 
 /* =========================================================
-   HELPERS
-========================================================= */
-
-function $(id){
-  return document.getElementById(id);
-}
-
-function esc(value){
-  return String(value)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-function saveState(){
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
-}
-
-function loadState(){
-
-  const saved = localStorage.getItem(STORAGE_KEY);
-
-  if(!saved) return;
-
-  try{
-
-    const parsed = JSON.parse(saved);
-
-    state = {
-      ...state,
-      ...parsed
-    };
-
-  }catch(e){
-
-    console.log("Could not load saved state.");
-
-  }
-}
-
-
-/* =========================================================
-   INIT
+   INITIALIZATION
 ========================================================= */
 
 function init(){
+  if(!data.profile.country) data.profile.country="India";
+  if(!data.profile.curriculum) data.profile.curriculum="JEE Main";
 
-  loadState();
+  ensureDatabaseChapters();
 
-  populateCountries();
+  $("#planStart").value ||= todayISO();
 
-  if(state.country && DB[state.country]){
+  populateCountry();
+  populateCurriculum();
+  populateSubject();
 
-    $("countrySelect").value = state.country;
+  applyTheme();
+  updateAll();
 
-    populateExams();
-
-    if(state.exam && DB[state.country][state.exam]){
-      $("examSelect").value = state.exam;
-    }
-
-  }else{
-
-    populateExams();
-
-  }
-
-  renderExamDescription();
-
-  $("questionsSolved").value = state.questionsSolved;
-  $("mockScore").value = state.mockScore;
-  $("studyHours").value = state.studyHours;
-  $("dailyQuestions").value = state.dailyQuestions;
-
-  $("studyDays").value = state.studyDays;
-
-  if(state.examDate){
-    $("examDate").value = state.examDate;
-  }else{
-    setDefaultExamDate();
-  }
-
-  if(state.plan && state.plan.length){
-
-    $("step6").classList.remove("hidden");
-
-  }
-
-  renderStep();
-
+  renderPlan();
+  renderCalendar();
 }
 
+function populateCountry(){
+  const el=$("#countrySelect");
+  el.innerHTML=countries().map(c=>
+    `<option ${c===data.profile.country?"selected":""}>${esc(c)}</option>`
+  ).join("");
+}
+
+function populateCurriculum(){
+  const el=$("#curriculumSelect");
+  const list=curricula(data.profile.country);
+  if(!list.includes(data.profile.curriculum)){
+    data.profile.curriculum=list[0]||"Custom Curriculum";
+  }
+  el.innerHTML=list.map(c=>
+    `<option ${c===data.profile.curriculum?"selected":""}>${esc(c)}</option>`
+  ).join("");
+}
+
+function populateSubject(){
+  const el=$("#subjectSelect");
+  const list=subjects(data.profile.country,data.profile.curriculum);
+  el.innerHTML=list.map(s=>`<option>${esc(s)}</option>`).join("");
+}
+
+function syncProfile(){
+  data.profile.country=$("#countrySelect").value;
+  data.profile.curriculum=$("#curriculumSelect").value;
+  ensureDatabaseChapters();
+  save();
+  populateSubject();
+  renderChapters();
+  populateAllChapterSelects();
+  updateAll();
+}
+
+$("#countrySelect").addEventListener("change",()=>{
+  data.profile.country=$("#countrySelect").value;
+  data.profile.curriculum=curricula(data.profile.country)[0]||"Custom Curriculum";
+  populateCurriculum();
+  populateSubject();
+  ensureDatabaseChapters();
+  save();
+  renderChapters();
+  populateAllChapterSelects();
+  updateAll();
+});
+
+$("#curriculumSelect").addEventListener("change",()=>{
+  data.profile.curriculum=$("#curriculumSelect").value;
+  ensureDatabaseChapters();
+  save();
+  populateSubject();
+  renderChapters();
+  populateAllChapterSelects();
+  updateAll();
+});
+
+$("#subjectSelect").addEventListener("change",renderChapters);
+$("#chapterSearch").addEventListener("input",renderChapters);
 
 /* =========================================================
-   COUNTRY / EXAM
+   NAVIGATION
 ========================================================= */
 
-function populateCountries(){
+function showPage(page){
+  $$(".page").forEach(p=>p.classList.remove("active"));
+  const target=$("#"+page);
+  if(target) target.classList.add("active");
 
-  const select = $("countrySelect");
-
-  select.innerHTML = "";
-
-  Object.keys(DB).forEach(country=>{
-
-    const option = document.createElement("option");
-
-    option.value = country;
-    option.textContent = country;
-
-    select.appendChild(option);
-
+  $$("[data-page]").forEach(b=>{
+    b.classList.toggle("active",b.dataset.page===page);
   });
 
-  if(!state.country){
-    state.country = Object.keys(DB)[0];
-  }
-
-  select.value = state.country;
+  if(page==="dashboard") renderDashboard();
+  if(page==="chapters") renderChapters();
+  if(page==="planner") renderPlan();
+  if(page==="revision") renderRevision();
+  if(page==="mindmap") renderMindMap();
+  if(page==="analytics") renderAnalytics();
+  if(page==="calendar") renderCalendar();
+  if(page==="goals") renderGoals();
+  if(page==="notes") renderNotes();
 }
 
+document.addEventListener("click",e=>{
+  const pageBtn=e.target.closest("[data-page]");
+  if(pageBtn) showPage(pageBtn.dataset.page);
 
-function populateExams(){
+  const jump=e.target.closest("[data-page-jump]");
+  if(jump) showPage(jump.dataset.pageJump);
 
-  const country = $("countrySelect").value;
-
-  state.country = country;
-
-  const select = $("examSelect");
-
-  select.innerHTML = "";
-
-  Object.keys(DB[country]).forEach(exam=>{
-
-    const option = document.createElement("option");
-
-    option.value = exam;
-    option.textContent = exam;
-
-    select.appendChild(option);
-
-  });
-
-  if(
-    state.exam &&
-    DB[country][state.exam]
-  ){
-    select.value = state.exam;
-  }else{
-
-    state.exam = Object.keys(DB[country])[0];
-
-    select.value = state.exam;
-
-  }
-
-  renderExamDescription();
-
-  saveState();
-}
-
-
-function renderExamDescription(){
-
-  const country = $("countrySelect").value;
-  const exam = $("examSelect").value;
-
-  if(
-    DB[country] &&
-    DB[country][exam]
-  ){
-
-    $("examDescription").textContent =
-      DB[country][exam].description;
-
-  }
-
-}
-
+  const close=e.target.closest("[data-close]");
+  if(close) $("#"+close.dataset.close).classList.remove("open");
+});
 
 /* =========================================================
-   STEP NAVIGATION
+   CHAPTERS
 ========================================================= */
 
-function renderStep(){
+function visibleChapters(){
+  const subject=$("#subjectSelect").value;
+  const search=($("#chapterSearch").value||"").toLowerCase();
 
-  document.querySelectorAll(".step").forEach(el=>{
-    el.classList.add("hidden");
+  return data.chapters.filter(c=>{
+    const sameCurr=
+      c.custom ||
+      (c.sourceCountry===data.profile.country &&
+       c.sourceCurriculum===data.profile.curriculum);
+
+    return sameCurr &&
+      (!subject || c.subject===subject) &&
+      c.name.toLowerCase().includes(search);
   });
-
-  const current = $("step"+state.step);
-
-  if(current){
-    current.classList.remove("hidden");
-  }
-
-  const totalSteps = 7;
-
-  const percent =
-    Math.round((state.step / totalSteps) * 100);
-
-  $("stepText").textContent =
-    `Step ${state.step} of ${totalSteps}`;
-
-  $("stepPercent").textContent =
-    `${percent}%`;
-
-  $("wizardProgress").style.width =
-    percent+"%";
-
-  if(state.step === 2){
-    renderSubjects();
-  }
-
-  if(state.step === 3){
-    renderTopics();
-  }
-
-  if(state.step === 5){
-    updateDeadline();
-  }
-
-  if(state.step === 6){
-    renderPlanSummary();
-  }
-
-  if(state.step === 7){
-    renderDashboard();
-  }
-
-  saveState();
 }
 
+function renderChapters(){
+  const list=visibleChapters();
 
-function nextStep(){
-
-  if(state.step === 1){
-
-    state.country = $("countrySelect").value;
-    state.exam = $("examSelect").value;
-
-  }
-
-  if(state.step === 2){
-
-    if(!state.selectedSubjects.length){
-
-      alert("Select at least one subject first.");
-      return;
-
-    }
-
-  }
-
-  if(state.step === 3){
-
-    if(!state.topics.length){
-
-      alert("Select at least one topic first.");
-      return;
-
-    }
-
-  }
-
-  if(state.step === 4){
-
-    collectPerformance();
-
-  }
-
-  if(state.step < 7){
-
-    state.step++;
-
-  }
-
-  renderStep();
-}
-
-
-function prevStep(){
-
-  if(state.step > 1){
-
-    state.step--;
-
-    renderStep();
-
-  }
-
-}
-
-
-/* =========================================================
-   SUBJECTS
-========================================================= */
-
-function renderSubjects(){
-
-  const container = $("subjectList");
-
-  container.innerHTML = "";
-
-  const subjects =
-    DB[state.country][state.exam].subjects;
-
-  Object.keys(subjects).forEach(subject=>{
-
-    const selected =
-      state.selectedSubjects.includes(subject);
-
-    const div = document.createElement("div");
-
-    div.className =
-      "option "+(selected ? "selected":"");
-
-    div.innerHTML = `
-      <input type="checkbox" ${selected ? "checked":""}>
-      <div class="option-title">${esc(subject)}</div>
-      <div class="option-desc">
-        ${subjects[subject].length} available topics
+  $("#chapterGrid").innerHTML=list.length ? list.map(c=>`
+    <div class="chapterCard">
+      <div class="chapterTop">
+        <input class="chapterCheck" type="checkbox"
+          ${c.selected?"checked":""}
+          onchange="toggleChapter('${c.id}',this.checked)">
+        <div class="chapterName">
+          ${esc(c.name)}
+          <div class="sub">${esc(c.subject)}</div>
+        </div>
+        <span class="badge ${c.difficulty==="Hard"?"hard":c.difficulty==="Easy"?"easy":"avg"}">
+          ${esc(c.difficulty)}
+        </span>
       </div>
-    `;
 
-    div.onclick = ()=>{
+      <div style="margin-top:12px">
+        <div class="sub" style="margin-bottom:5px">
+          ${esc(c.status)} • ${c.progress}%
+        </div>
+        <div class="progress">
+          <div style="width:${c.progress}%"></div>
+        </div>
+      </div>
 
-      if(state.selectedSubjects.includes(subject)){
+      <div class="chapterControls">
+        <select onchange="changeDifficulty('${c.id}',this.value)">
+          ${["Easy","Average","Hard"].map(x=>
+            `<option ${x===c.difficulty?"selected":""}>${x}</option>`
+          ).join("")}
+        </select>
 
-        state.selectedSubjects =
-          state.selectedSubjects.filter(
-            x=>x!==subject
-          );
+        <select onchange="changeStatus('${c.id}',this.value)">
+          ${["Not Started","Learning","Practicing","Revision","Mastered"].map(x=>
+            `<option ${x===c.status?"selected":""}>${x}</option>`
+          ).join("")}
+        </select>
+      </div>
 
-      }else{
+      <div class="chapterFooter">
+        <input type="range" min="0" max="100" value="${c.progress}"
+          onchange="changeProgress('${c.id}',this.value)">
+      </div>
+    </div>
+  `).join("") :
+  `<div class="card" style="grid-column:1/-1;text-align:center;padding:45px">
+    <h2>No chapters found</h2>
+    <div class="sub" style="margin:8px 0 15px">
+      Add a custom chapter or choose another curriculum/subject.
+    </div>
+    <button class="btn primary" id="emptyAddChapter">+ Add Chapter</button>
+  </div>`;
 
-        state.selectedSubjects.push(subject);
-
-      }
-
-      renderSubjects();
-
-      renderTopics();
-
-      saveState();
-
-    };
-
-    container.appendChild(div);
-
-  });
-
+  $("#selectedCount").textContent=data.chapters.filter(c=>c.selected).length;
 }
 
-
-/* =========================================================
-   TOPICS
-========================================================= */
-
-function renderTopics(){
-
-  const container = $("topicList");
-
-  container.innerHTML = "";
-
-  const available =
-    DB[state.country][state.exam].subjects;
-
-  state.selectedSubjects.forEach(subject=>{
-
-    available[subject].forEach(topic=>{
-
-      let existing =
-        state.topics.find(
-          x=>x.subject===subject && x.name===topic
-        );
-
-      if(!existing){
-
-        existing = {
-          id:crypto.randomUUID
-            ? crypto.randomUUID()
-            : Date.now()+"_"+Math.random(),
-
-          subject,
-          name:topic,
-          level:"average"
-        };
-
-        state.topics.push(existing);
-
-      }
-
-      const card =
-        document.createElement("div");
-
-      card.className = "topic-card";
-
-      card.innerHTML = `
-
-        <div>
-          <div class="topic-name">${esc(topic)}</div>
-          <div class="topic-subject">${esc(subject)}</div>
-        </div>
-
-        <div class="level-buttons">
-
-          <button
-            class="level easy ${existing.level==="easy"?"active":""}"
-            onclick="setLevel('${existing.id}','easy')">
-            Easy
-          </button>
-
-          <button
-            class="level average ${existing.level==="average"?"active":""}"
-            onclick="setLevel('${existing.id}','average')">
-            Average
-          </button>
-
-          <button
-            class="level hard ${existing.level==="hard"?"active":""}"
-            onclick="setLevel('${existing.id}','hard')">
-            Hard
-          </button>
-
-        </div>
-      `;
-
-      container.appendChild(card);
-
-    });
-
-  });
-
-  /* remove topics belonging to deselected subjects */
-
-  state.topics =
-    state.topics.filter(
-      topic =>
-        state.selectedSubjects.includes(topic.subject) ||
-        topic.subject==="Custom"
-    );
-
-  saveState();
-
+function toggleChapter(id,val){
+  const c=data.chapters.find(x=>x.id===id);
+  if(!c)return;
+  c.selected=val;
+  if(val && c.progress===0)c.priority="High";
+  save();
+  updateAll();
+  renderChapters();
 }
 
+function changeDifficulty(id,val){
+  const c=data.chapters.find(x=>x.id===id);
+  if(!c)return;
+  c.difficulty=val;
+  c.estimatedDays=val==="Easy"?3:val==="Hard"?7:4;
+  c.priority=val==="Hard"?"High":val==="Easy"?"Low":"Medium";
+  save();updateAll();renderChapters();
+}
 
-function setLevel(id,level){
+function changeStatus(id,val){
+  const c=data.chapters.find(x=>x.id===id);
+  if(!c)return;
+  c.status=val;
+  if(val==="Mastered") c.progress=100;
+  else if(val==="Learning" && c.progress===0)c.progress=25;
+  else if(val==="Practicing" && c.progress<40)c.progress=50;
+  else if(val==="Revision" && c.progress<70)c.progress=75;
 
-  const topic =
-    state.topics.find(x=>x.id===id);
-
-  if(topic){
-
-    topic.level = level;
-
-    saveState();
-
-    renderTopics();
-
+  if(val==="Mastered"){
+    c.nextReview=addDays(todayISO(),30);
+    c.reviewLevel=4;
   }
-
+  save();updateAll();renderChapters();
 }
 
+function changeProgress(id,val){
+  const c=data.chapters.find(x=>x.id===id);
+  if(!c)return;
+  c.progress=Number(val);
 
-function addCustomTopic(){
+  if(c.progress>=100)c.status="Mastered";
+  else if(c.progress>=75)c.status="Revision";
+  else if(c.progress>=40)c.status="Practicing";
+  else if(c.progress>0)c.status="Learning";
+  else c.status="Not Started";
 
-  const input = $("customTopic");
-
-  const name = input.value.trim();
-
-  if(!name) return;
-
-  state.topics.push({
-
-    id:
-      crypto.randomUUID
-        ? crypto.randomUUID()
-        : Date.now()+"_"+Math.random(),
-
-    subject:"Custom",
-
-    name,
-
-    level:"average",
-
-    custom:true
-
-  });
-
-  input.value = "";
-
-  saveState();
-
-  renderTopics();
-
+  save();updateAll();
 }
 
-
-/* =========================================================
-   PERFORMANCE
-========================================================= */
-
-function collectPerformance(){
-
-  state.questionsSolved =
-    Math.max(
-      0,
-      Math.min(
-        20,
-        Number($("questionsSolved").value) || 0
-      )
-    );
-
-  state.mockScore =
-    Math.max(
-      0,
-      Math.min(
-        100,
-        Number($("mockScore").value) || 0
-      )
-    );
-
-  state.studyHours =
-    Math.max(
-      .5,
-      Math.min(
-        16,
-        Number($("studyHours").value) || 4
-      )
-    );
-
-  state.dailyQuestions =
-    Math.max(
-      5,
-      Math.min(
-        500,
-        Number($("dailyQuestions").value) || 40
-      )
-    );
-
-  saveState();
-
-}
-
-
-/* =========================================================
-   DATE
-========================================================= */
-
-function setDefaultExamDate(){
-
-  const date = new Date();
-
-  date.setDate(
-    date.getDate()+90
-  );
-
-  $("examDate").value =
-    date.toISOString().split("T")[0];
-
-}
-
-
-function updateDeadline(){
-
-  state.examDate = $("examDate").value;
-  state.studyDays = Number($("studyDays").value);
-
-  if(!state.examDate){
-
-    $("availableDays").textContent = "—";
-    $("plannedStudyDays").textContent = "—";
-
+$("#generateFromChapters").addEventListener("click",()=>{
+  const selected=data.chapters.filter(c=>c.selected);
+  if(!selected.length){
+    alert("Select at least one chapter first.");
     return;
-
   }
+  generatePlan();
+  showPage("planner");
+});
 
-  const today =
-    new Date();
-
-  today.setHours(0,0,0,0);
-
-  const exam =
-    new Date(state.examDate+"T00:00:00");
-
-  const diff =
-    Math.ceil(
-      (exam-today)/(1000*60*60*24)
-    );
-
-  const days =
-    Math.max(1,diff);
-
-  const studyDays =
-    Math.max(
-      1,
-      Math.floor(days * (state.studyDays/7))
-    );
-
-  $("availableDays").textContent =
-    `${days} days`;
-
-  $("plannedStudyDays").textContent =
-    `${studyDays} study days`;
-
-  saveState();
-
-}
-
+$("#regeneratePlan").addEventListener("click",generatePlan);
 
 /* =========================================================
-   ADAPTIVE PLAN GENERATOR
+   SMART PLAN GENERATOR
 ========================================================= */
 
 function generatePlan(){
+  const selected=data.chapters.filter(c=>c.selected && c.progress<100);
 
-  collectPerformance();
-
-  state.examDate =
-    $("examDate").value;
-
-  state.studyDays =
-    Number($("studyDays").value);
-
-  if(!state.examDate){
-
-    alert("Please select an exam date.");
+  if(!selected.length){
+    alert("Select unfinished chapters first.");
     return;
-
   }
 
-  const today =
-    new Date();
-
-  today.setHours(0,0,0,0);
-
-  const exam =
-    new Date(state.examDate+"T00:00:00");
-
-  let calendarDays =
-    Math.ceil(
-      (exam-today)/(1000*60*60*24)
-    );
-
-  if(calendarDays < 1){
-
-    alert("Exam date must be in the future.");
-    return;
-
-  }
-
-  let availableStudyDays =
-    Math.max(
-      1,
-      Math.floor(
-        calendarDays*(state.studyDays/7)
-      )
-    );
-
-
-  /* Difficulty-based base time */
-
-  const baseDays = {
-
-    easy:2,
-    average:3,
-    hard:5
-
-  };
-
-
-  /* Performance multiplier */
-
-  const solvingRate =
-    state.questionsSolved/20;
-
-  const mockRate =
-    state.mockScore/100;
-
-  const performance =
-    (solvingRate + mockRate)/2;
-
-  let multiplier = 1;
-
-  if(performance < .25){
-
-    multiplier = 1.25;
-
-  }else if(performance < .5){
-
-    multiplier = 1.10;
-
-  }else if(performance < .75){
-
-    multiplier = 1;
-
-  }else{
-
-    multiplier = .9;
-
-  }
-
-
-  const topics =
-    state.topics.map(topic=>{
-
-      let weight =
-        baseDays[topic.level] || 3;
-
-      weight *= multiplier;
-
-      return {
-        ...topic,
-        weight:Math.max(1.5,weight)
-      };
-
-    });
-
-
-  const totalWeight =
-    topics.reduce(
-      (sum,t)=>sum+t.weight,
-      0
-    );
-
-
-  /*
-    Convert topic weights into available study days.
-    Minimum one day per topic.
-  */
-
-  let planDays =
-    Math.min(
-      availableStudyDays,
-      Math.max(
-        topics.length,
-        Math.round(totalWeight)
-      )
-    );
-
-
-  /*
-    If there are more topics than available days,
-    multiple topics can share a day.
-  */
-
-  state.plan = [];
-
-  for(let d=1; d<=planDays; d++){
-
-    state.plan.push({
-
-      day:d,
-
-      tasks:[]
-
-    });
-
-  }
-
-
-  /* distribute topics */
-
-  topics.forEach((topic,index)=>{
-
-    const idealDays =
-      Math.max(
-        1,
-        Math.round(
-          (topic.weight/totalWeight)*planDays
-        )
-      );
-
-    const startIndex =
-      Math.floor(
-        index*(planDays/topics.length)
-      );
-
-    const start =
-      Math.min(
-        planDays-1,
-        Math.max(0,startIndex)
-      );
-
-
-    const selectedDays = [];
-
-    for(let i=0;i<idealDays;i++){
-
-      const dayIndex =
-        Math.min(
-          planDays-1,
-          start+i
-        );
-
-      if(!selectedDays.includes(dayIndex)){
-
-        selectedDays.push(dayIndex);
-
-      }
-
-    }
-
-
-    /* LEARNING */
-
-    state.plan[
-      selectedDays[0]
-    ].tasks.push({
-
-      id:
-        topic.id+"_learn",
-
-      topicId:topic.id,
-
-      title:
-        `Learn / revise ${topic.name}`,
-
-      detail:
-        topic.level==="hard"
-          ? "Deep learning + notes + worked examples"
-          : topic.level==="average"
-            ? "Concept review + examples"
-            : "Quick concept revision",
-
-      type:"learn"
-
-    });
-
-
-    /* PRACTICE */
-
-    if(idealDays >= 2){
-
-      const practiceDay =
-        selectedDays[
-          Math.min(
-            1,
-            selectedDays.length-1
-          )
-        ];
-
-      state.plan[
-        practiceDay
-      ].tasks.push({
-
-        id:
-          topic.id+"_practice",
-
-        topicId:topic.id,
-
-        title:
-          `Practice ${topic.name}`,
-
-        detail:
-          `${Math.round(
-            state.dailyQuestions /
-            Math.max(1,topics.length)
-          ) + 5} focused questions + examples`,
-
-        type:"practice"
-
-      });
-
-    }
-
-
-    /* TEST */
-
-    if(topic.level!=="easy" || idealDays>=3){
-
-      const testDay =
-        selectedDays[
-          Math.min(
-            2,
-            selectedDays.length-1
-          )
-        ];
-
-      state.plan[
-        testDay
-      ].tasks.push({
-
-        id:
-          topic.id+"_test",
-
-        topicId:topic.id,
-
-        title:
-          `Test + error analysis: ${topic.name}`,
-
-        detail:
-          "Timed questions → check mistakes → update error log",
-
-        type:"test"
-
-      });
-
-    }
-
-  });
-
-
-  /*
-    Add revision tasks.
-    These are actual checkable tasks, not just a visual list.
-  */
-
-  state.topics.forEach(topic=>{
-
-    if(!state.plan.length) return;
-
-    const firstDay =
-      state.topics.indexOf(topic);
-
-    const revisionDays = [
-      firstDay+2,
-      firstDay+6,
-      firstDay+13
-    ];
-
-    revisionDays.forEach((dayIndex,i)=>{
-
-      if(
-        dayIndex >= 0 &&
-        dayIndex < state.plan.length
-      ){
-
-        const labels = [
-          "Quick recall",
-          "PYQs / practice",
-          "Test + errors"
-        ];
-
-        state.plan[dayIndex].tasks.push({
-
-          id:
-            topic.id+"_rev_"+i,
-
-          topicId:topic.id,
-
-          title:
-            `${labels[i]} — ${topic.name}`,
-
-          detail:
-            i===0
-              ? "Recall formulas, concepts and key points"
-              : i===1
-                ? "Solve exam-style questions without notes"
-                : "Timed test + review every mistake",
-
-          type:"revision"
-
+  const dailyHours=Math.max(1,Number($("#dailyHours").value)||5);
+  const sessions=Math.max(1,Number($("#sessionsDay").value)||3);
+  const start=$("#planStart").value||todayISO();
+
+  const units=[];
+
+  selected
+    .sort((a,b)=>{
+      const p={High:0,Medium:1,Low:2};
+      return p[a.priority]-p[b.priority];
+    })
+    .forEach(c=>{
+      let days=c.difficulty==="Easy"?2:c.difficulty==="Hard"?6:4;
+      if(c.progress>=50)days=Math.max(1,Math.ceil(days*.6));
+
+      for(let d=0;d<days;d++){
+        units.push({
+          chapterId:c.id,
+          chapter:c.name,
+          subject:c.subject,
+          type:d===0?"Learn":d===days-1?"Practice":"Study",
+          difficulty:c.difficulty,
+          minutes:Math.max(30,Math.round((dailyHours*60)/sessions))
         });
-
       }
-
     });
 
-  });
+  if($("#includeRevision").value==="yes"){
+    selected.forEach(c=>{
+      units.push({
+        chapterId:c.id,
+        chapter:c.name,
+        subject:c.subject,
+        type:"Revision",
+        difficulty:c.difficulty,
+        minutes:30
+      });
+    });
+  }
 
+  const days=[];
+  let index=0;
+  let date=start;
 
-  /*
-    Remove empty days.
-  */
+  while(index<units.length && days.length<180){
+    const dayUnits=units.slice(index,index+sessions);
+    days.push({date,tasks:dayUnits});
+    index+=dayUnits.length;
+    date=addDays(date,1);
+  }
 
-  state.plan =
-    state.plan.filter(
-      day=>day.tasks.length>0
-    );
+  data.plan=days;
 
-
-  /*
-    Re-number days.
-  */
-
-  state.plan.forEach((day,index)=>{
-    day.day = index+1;
-  });
-
-
-  /*
-    Preserve existing completion only for
-    tasks that still exist.
-  */
-
-  const validIds = new Set(
-    state.plan.flatMap(
-      day=>day.tasks.map(
-        task=>task.id
-      )
-    )
+  data.tasks=days.flatMap(day=>
+    day.tasks.map(t=>({
+      id:uid(),
+      date:day.date,
+      title:`${t.type}: ${t.chapter}`,
+      subject:t.subject,
+      chapterId:t.chapterId,
+      minutes:t.minutes,
+      done:false
+    }))
   );
 
-  Object.keys(state.completed).forEach(id=>{
+  save();
+  renderPlan();
+  updateAll();
+}
 
-    if(!validIds.has(id)){
+function renderPlan(){
+  const output=$("#planOutput");
 
-      delete state.completed[id];
+  if(!data.plan.length){
+    output.innerHTML=`
+      <div class="card" style="text-align:center;padding:50px">
+        <h2>Your plan is waiting</h2>
+        <div class="sub" style="margin:8px 0 18px">
+          Select chapters and generate a smart schedule.
+        </div>
+        <button class="btn primary" data-page-jump="chapters">Choose Chapters</button>
+      </div>`;
+    return;
+  }
 
+  output.innerHTML=data.plan.map(day=>{
+    const date=dateObj(day.date);
+    const label=date.toLocaleDateString(undefined,{
+      weekday:"long",month:"short",day:"numeric"
+    });
+
+    const tasks=data.tasks.filter(t=>t.date===day.date);
+
+    return `
+      <div class="dayPlan">
+        <div class="dayHeader">
+          <div><b>${label}</b><div class="sub">${day.date}</div></div>
+          <span class="badge">${tasks.filter(t=>t.done).length}/${tasks.length} done</span>
+        </div>
+        ${tasks.map(t=>`
+          <div class="planTask">
+            <div class="dot"></div>
+            <div class="taskInfo">
+              <div class="taskTitle">${esc(t.title)}</div>
+              <div class="taskMeta">${esc(t.subject)} • ${t.minutes} min</div>
+            </div>
+            <button class="check ${t.done?"done":""}" onclick="toggleTask('${t.id}')">
+              ${t.done?"✓":""}
+            </button>
+          </div>
+        `).join("")}
+      </div>`;
+  }).join("");
+}
+
+function toggleTask(id){
+  const t=data.tasks.find(x=>x.id===id);
+  if(!t)return;
+
+  t.done=!t.done;
+
+  if(t.done){
+    data.xp+=Math.max(10,Math.round(t.minutes/3));
+    const c=data.chapters.find(x=>x.id===t.chapterId);
+    if(c && t.type!=="Revision"){
+      c.progress=Math.min(100,c.progress+10);
+      if(c.progress>=100)c.status="Mastered";
     }
+    updateStreak();
+  }else{
+    data.xp=Math.max(0,data.xp-Math.max(10,Math.round(t.minutes/3)));
+  }
 
-  });
-
-
-  state.step = 6;
-
-  saveState();
-
-  renderStep();
-
+  save();
+  renderPlan();
+  updateAll();
 }
-
-
-/* =========================================================
-   PLAN SUMMARY
-========================================================= */
-
-function renderPlanSummary(){
-
-  const tasks =
-    state.plan.reduce(
-      (sum,day)=>sum+day.tasks.length,
-      0
-    );
-
-  $("planTotalDays").textContent =
-    state.plan.length;
-
-  $("planTasks").textContent =
-    tasks;
-
-  $("planHours").textContent =
-    state.studyHours;
-
-  $("planTopics").textContent =
-    state.topics.length;
-
-
-  const hard =
-    state.topics.filter(
-      x=>x.level==="hard"
-    ).length;
-
-  const average =
-    state.topics.filter(
-      x=>x.level==="average"
-    ).length;
-
-  const easy =
-    state.topics.filter(
-      x=>x.level==="easy"
-    ).length;
-
-
-  $("planExplanation").innerHTML = `
-
-    <div class="summary-item">
-      <span>🔴 Hard topics</span>
-      <strong>${hard}</strong>
-    </div>
-
-    <div class="summary-item">
-      <span>🟡 Average topics</span>
-      <strong>${average}</strong>
-    </div>
-
-    <div class="summary-item">
-      <span>🟢 Easy topics</span>
-      <strong>${easy}</strong>
-    </div>
-
-    <div class="summary-item">
-      <span>⏱ Daily study target</span>
-      <strong>${state.studyHours} hours</strong>
-    </div>
-
-    <div class="summary-item">
-      <span>📅 Exam</span>
-      <strong>${esc(state.exam)}</strong>
-    </div>
-
-    <div class="summary-item">
-      <span>🧠 Current performance</span>
-      <strong>${state.mockScore}% mock / ${state.questionsSolved}/20</strong>
-    </div>
-
-  `;
-
-}
-
 
 /* =========================================================
    DASHBOARD
 ========================================================= */
 
-function showDashboard(){
-
-  state.step = 7;
-
-  saveState();
-
-  renderStep();
-
-}
-
-
-function getAllTasks(){
-
-  return state.plan.flatMap(
-    day=>day.tasks
+function totalProgress(){
+  if(!data.chapters.length)return 0;
+  return Math.round(
+    data.chapters.reduce((s,c)=>s+c.progress,0)/data.chapters.length
   );
-
 }
 
-
-function getCompletedCount(){
-
-  return getAllTasks().filter(
-    task=>state.completed[task.id]
-  ).length;
-
+function todayTasks(){
+  return data.tasks.filter(t=>t.date===todayISO());
 }
-
 
 function renderDashboard(){
+  const now=new Date();
+  $("#dashDate").textContent=now.toLocaleDateString(undefined,{
+    weekday:"long",month:"long",day:"numeric",year:"numeric"
+  });
 
-  renderPlan();
+  const h=now.getHours();
+  $("#greeting").textContent=
+    h<12?"Good morning 👋":
+    h<18?"Good afternoon 👋":"Good evening 👋";
 
-  updateDashboardStats();
+  const pct=totalProgress();
+  $("#overallRing").style.setProperty("--p",pct+"%");
+  $("#overallPct").textContent=pct+"%";
 
+  const tasks=todayTasks();
+  const done=tasks.filter(t=>t.done).length;
+  $("#taskCount").textContent=`${done}/${tasks.length}`;
+  $("#todayProgress").textContent=
+    tasks.length?Math.round(done/tasks.length*100)+"%":"0%";
+
+  $("#todayTasks").innerHTML=tasks.length?tasks.map(t=>`
+    <div class="task">
+      <button class="check ${t.done?"done":""}" onclick="toggleTask('${t.id}')">
+        ${t.done?"✓":""}
+      </button>
+      <div class="taskInfo">
+        <div class="taskTitle">${esc(t.title)}</div>
+        <div class="taskMeta">${esc(t.subject)} • ${t.minutes} min</div>
+      </div>
+      <span class="badge">${t.done?"Done":"Pending"}</span>
+    </div>
+  `).join("") :
+  `<div class="sub" style="padding:25px;text-align:center">
+    No tasks scheduled today.<br><br>
+    <button class="btn primary" data-page-jump="chapters">Build a Plan</button>
+  </div>`;
+
+  const bySubject={};
+  data.chapters.forEach(c=>{
+    if(!bySubject[c.subject])bySubject[c.subject]=[];
+    bySubject[c.subject].push(c.progress);
+  });
+
+  $("#subjectProgress").innerHTML=Object.entries(bySubject).map(([s,p])=>{
+    const avg=Math.round(p.reduce((a,b)=>a+b,0)/p.length);
+    return `
+      <div style="margin:13px 0">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:12px;font-weight:700">${esc(s)}</span>
+          <span class="sub">${avg}%</span>
+        </div>
+        <div class="progress"><div style="width:${avg}%"></div></div>
+      </div>`;
+  }).join("") || `<div class="sub">Choose chapters to start tracking progress.</div>`;
+
+  renderWeak();
+  renderChart($("#dashChart"));
 }
 
+function renderWeak(){
+  const weak=data.chapters
+    .filter(c=>c.progress<70)
+    .sort((a,b)=>{
+      const p={High:0,Medium:1,Low:2};
+      return p[a.priority]-p[b.priority]||a.progress-b.progress;
+    })
+    .slice(0,5);
 
-function updateDashboardStats(){
-
-  const tasks =
-    getAllTasks();
-
-  const completed =
-    getCompletedCount();
-
-  const total =
-    tasks.length;
-
-  const remaining =
-    Math.max(0,total-completed);
-
-  const percent =
-    total
-      ? Math.round(
-          (completed/total)*100
-        )
-      : 0;
-
-
-  $("dashCompleted").textContent =
-    completed;
-
-  $("dashRemaining").textContent =
-    remaining;
-
-  $("dashPercent").textContent =
-    percent+"%";
-
-  $("overallFill").style.width =
-    percent+"%";
-
-  $("overallTaskText").textContent =
-    `${completed} / ${total} tasks`;
-
-  $("overallPercentText").textContent =
-    percent+"%";
-
-
-  const daysDone =
-    state.plan.filter(day=>
-      day.tasks.length &&
-      day.tasks.every(
-        task=>state.completed[task.id]
-      )
-    ).length;
-
-  $("dashDaysDone").textContent =
-    daysDone;
-
-
-  $("hardCount").textContent =
-    state.topics.filter(
-      x=>x.level==="hard"
-    ).length;
-
-  $("averageCount").textContent =
-    state.topics.filter(
-      x=>x.level==="average"
-    ).length;
-
-  $("easyCount").textContent =
-    state.topics.filter(
-      x=>x.level==="easy"
-    ).length;
-
+  $("#weakList").innerHTML=weak.length?weak.map(c=>`
+    <div class="task">
+      <div class="taskInfo">
+        <div class="taskTitle">${esc(c.name)}</div>
+        <div class="taskMeta">${esc(c.subject)} • ${c.progress}% complete</div>
+      </div>
+      <span class="badge ${c.difficulty==="Hard"?"hard":""}">${c.difficulty}</span>
+    </div>
+  `).join(""):`<div class="sub">Nothing urgent. Nice.</div>`;
 }
-
 
 /* =========================================================
-   RENDER DAILY PLAN
+   REVISION
 ========================================================= */
 
-function renderPlan(){
+function scheduleReview(c){
+  const intervals=[1,3,7,14,30];
+  const level=Math.min(c.reviewLevel||0,intervals.length-1);
+  c.nextReview=addDays(todayISO(),intervals[level]);
+}
 
-  const container =
-    $("planContainer");
+function renderRevision(){
+  const today=todayISO();
+  const due=data.chapters.filter(c=>
+    c.nextReview && c.nextReview<=today && c.progress>0
+  );
+  const upcoming=data.chapters.filter(c=>
+    c.nextReview && c.nextReview>today
+  );
 
-  container.innerHTML = "";
+  $("#dueToday").textContent=due.length;
+  $("#upcomingReviews").textContent=upcoming.length;
+  $("#masteredCount").textContent=data.chapters.filter(c=>c.status==="Mastered").length;
+  $("#weakCount").textContent=data.chapters.filter(c=>c.progress<40).length;
 
-  state.plan.forEach(day=>{
+  const list=[...due,...data.chapters.filter(c=>!c.nextReview && c.progress>0).slice(0,10)];
 
-    const completed =
-      day.tasks.filter(
-        task=>state.completed[task.id]
-      ).length;
+  $("#revisionList").innerHTML=list.length?list.map(c=>`
+    <div class="task">
+      <div class="taskInfo">
+        <div class="taskTitle">${esc(c.name)}</div>
+        <div class="taskMeta">${esc(c.subject)} • ${c.progress}% • ${
+          c.nextReview?`Due ${c.nextReview}`:"Needs review"
+        }</div>
+      </div>
+      <button class="btn" onclick="reviewChapter('${c.id}',false)">Hard</button>
+      <button class="btn success" onclick="reviewChapter('${c.id}',true)">Got it</button>
+    </div>
+  `).join(""):`<div style="text-align:center;padding:35px">
+    <h2>Revision queue is clear 🎉</h2>
+    <div class="sub">Complete some chapters to build your revision cycle.</div>
+  </div>`;
+}
 
-    const total =
-      day.tasks.length;
+function reviewChapter(id,easy){
+  const c=data.chapters.find(x=>x.id===id);
+  if(!c)return;
 
-    const percent =
-      total
-        ? Math.round(
-            (completed/total)*100
-          )
-        : 0;
+  if(easy)c.reviewLevel=Math.min(4,(c.reviewLevel||0)+1);
+  else c.reviewLevel=0;
 
+  scheduleReview(c);
+  data.xp+=easy?25:10;
 
-    const dayCard =
-      document.createElement("div");
+  save();
+  renderRevision();
+  updateAll();
+}
 
-    dayCard.className =
-      "day-card";
+/* =========================================================
+   MIND MAP
+========================================================= */
 
+function populateAllChapterSelects(){
+  const selected=data.chapters.filter(c=>c.selected||c.progress>0);
 
-    dayCard.innerHTML = `
+  const opts=selected.length?selected:
+    data.chapters.slice(0,50);
 
-      <div class="day-header">
+  const html=opts.map(c=>
+    `<option value="${c.id}">${esc(c.subject)} — ${esc(c.name)}</option>`
+  ).join("");
 
-        <div>
+  $("#mindMapSelect").innerHTML=html;
+  $("#focusChapter").innerHTML=html;
+  $("#noteChapter").innerHTML=
+    `<option value="">General</option>`+html;
+}
 
-          <div class="day-title">
-            Day ${day.day}
-          </div>
+function renderMindMap(){
+  const id=$("#mindMapSelect").value;
+  const c=data.chapters.find(x=>x.id===id);
 
-          <div class="day-meta">
-            ${completed}/${total} tasks completed
-          </div>
+  if(!c){
+    $("#mindMap").innerHTML=`
+      <div class="sub" style="margin:auto">
+        Select a chapter to generate its mind map.
+      </div>`;
+    return;
+  }
 
-        </div>
+  const concepts=c.concepts?.length?c.concepts:[
+    "Core concept",
+    "Important formulas",
+    "Applications",
+    "Practice questions"
+  ];
 
-        <div class="day-progress">
+  $("#mindMap").innerHTML=`
+    <div class="centerNode">${esc(c.name)}</div>
+    <div class="mapLine"></div>
 
-          <div class="day-progress-text">
-            ${percent}%
-          </div>
-
-          <div class="mini-bar">
-
-            <div
-              class="mini-fill"
-              style="width:${percent}%">
-            </div>
-
-          </div>
-
-        </div>
-
+    <div class="mapBranches">
+      <div class="branch">
+        <h3>🧠 Concepts</h3>
+        <ul>${concepts.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
       </div>
 
-      <div class="task-list"></div>
+      <div class="branch">
+        <h3>⚡ Quick Revision</h3>
+        <ul>
+          <li>Understand the core idea</li>
+          <li>Review definitions</li>
+          <li>Recall without notes</li>
+          <li>Test yourself</li>
+        </ul>
+      </div>
 
-    `;
+      <div class="branch">
+        <h3>📐 Formulas</h3>
+        <ul>
+          <li>Write important formulas</li>
+          <li>Know every variable</li>
+          <li>Check units</li>
+          <li>Practice formula application</li>
+        </ul>
+      </div>
 
+      <div class="branch">
+        <h3>⚠️ Mistakes</h3>
+        <ul>
+          <li>Record common errors</li>
+          <li>Check sign conventions</li>
+          <li>Review difficult questions</li>
+          <li>Retest weak areas</li>
+        </ul>
+      </div>
+    </div>`;
+}
 
-    const taskList =
-      dayCard.querySelector(".task-list");
+$("#mindMapSelect").addEventListener("change",renderMindMap);
 
+/* =========================================================
+   FOCUS TIMER
+========================================================= */
 
-    day.tasks.forEach(task=>{
+let timerSeconds=45*60;
+let timerInterval=null;
+let timerRunning=false;
 
-      const isCompleted =
-        !!state.completed[task.id];
+function updateTimer(){
+  const m=Math.floor(timerSeconds/60).toString().padStart(2,"0");
+  const s=(timerSeconds%60).toString().padStart(2,"0");
+  $("#timer").textContent=`${m}:${s}`;
+}
 
+$$(".timerBtns button[data-min]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    timerSeconds=Number(btn.dataset.min)*60;
+    updateTimer();
+  });
+});
 
-      const taskEl =
-        document.createElement("div");
+$("#startTimer").addEventListener("click",()=>{
+  if(timerRunning)return;
+  timerRunning=true;
 
-      taskEl.className =
-        "task "+
-        (isCompleted ? "completed":"");
+  timerInterval=setInterval(()=>{
+    if(timerSeconds<=0){
+      clearInterval(timerInterval);
+      timerRunning=false;
 
+      const id=$("#focusChapter").value;
+      const c=data.chapters.find(x=>x.id===id);
 
-      let badgeClass =
-        task.type==="learn"
-          ? "learn"
-          : task.type==="practice"
-            ? "practice"
-            : task.type==="test"
-              ? "test"
-              : "revision";
+      if(c){
+        c.progress=Math.min(100,c.progress+10);
+        if(c.progress>=100)c.status="Mastered";
+      }
 
+      data.xp+=30;
+      data.studyLog[todayISO()]=(data.studyLog[todayISO()]||0)+45;
+      updateStreak();
+      save();
+      updateAll();
 
-      let badgeText =
-        task.type==="learn"
-          ? "LEARN"
-          : task.type==="practice"
-            ? "PRACTICE"
-            : task.type==="test"
-              ? "TEST"
-              : "REVISION";
+      alert("Focus session complete! +30 XP 🎉");
+      timerSeconds=45*60;
+      updateTimer();
+      return;
+    }
 
+    timerSeconds--;
+    updateTimer();
+  },1000);
+});
 
-      taskEl.innerHTML = `
+$("#pauseTimer").addEventListener("click",()=>{
+  clearInterval(timerInterval);
+  timerRunning=false;
+});
 
-        <button
-          class="task-check"
-          aria-label="Complete task"
-          onclick="toggleTask('${task.id}')">
+$("#resetTimer").addEventListener("click",()=>{
+  clearInterval(timerInterval);
+  timerRunning=false;
+  timerSeconds=45*60;
+  updateTimer();
+});
 
-          ${isCompleted ? "✓":""}
+$("#customTimer").addEventListener("click",()=>{
+  const m=prompt("Minutes?",45);
+  if(m && Number(m)>0){
+    timerSeconds=Math.round(Number(m)*60);
+    updateTimer();
+  }
+});
 
-        </button>
+$("#quickFocus").onclick=()=>showPage("focus");
+$("#heroFocus").onclick=()=>showPage("focus");
 
-        <div class="task-content">
+/* =========================================================
+   ANALYTICS
+========================================================= */
 
-          <div class="task-title">
-            ${esc(task.title)}
-          </div>
+function last7(){
+  return Array.from({length:7},(_,i)=>{
+    const d=addDays(todayISO(),i-6);
+    return {
+      date:d,
+      value:Number(data.studyLog[d]||0)
+    };
+  });
+}
 
-          <div class="task-detail">
-            ${esc(task.detail)}
-          </div>
+function renderChart(el){
+  const vals=last7();
+  const max=Math.max(60,...vals.map(x=>x.value));
 
+  el.innerHTML=vals.map(x=>{
+    const h=Math.max(3,(x.value/max)*160);
+    const label=dateObj(x.date).toLocaleDateString(undefined,{weekday:"short"});
+    return `
+      <div class="barWrap">
+        <div class="sub">${x.value}m</div>
+        <div class="bar" style="height:${h}px"></div>
+        <div class="barLabel">${label}</div>
+      </div>`;
+  }).join("");
+}
+
+function renderAnalytics(){
+  const total=Object.values(data.studyLog).reduce((a,b)=>a+Number(b),0);
+  const completed=data.tasks.filter(t=>t.done).length;
+  const rate=data.tasks.length?Math.round(completed/data.tasks.length*100):0;
+  const avg=Math.round(last7().reduce((a,b)=>a+b.value,0)/7);
+
+  $("#totalStudy").textContent=Math.floor(total/60)+"h";
+  $("#completedTotal").textContent=completed;
+  $("#completionRate").textContent=rate+"%";
+  $("#averageStudy").textContent=avg+"m";
+
+  renderChart($("#analyticsChart"));
+
+  const subject={};
+  data.tasks.forEach(t=>{
+    if(t.done)subject[t.subject]=(subject[t.subject]||0)+t.minutes;
+  });
+
+  const totalSub=Object.values(subject).reduce((a,b)=>a+b,0)||1;
+
+  $("#subjectAnalytics").innerHTML=Object.entries(subject).map(([s,v])=>{
+    const pct=Math.round(v/totalSub*100);
+    return `
+      <div style="margin:15px 0">
+        <div style="display:flex;justify-content:space-between">
+          <b style="font-size:12px">${esc(s)}</b><span class="sub">${pct}%</span>
         </div>
+        <div class="progress" style="margin-top:6px"><div style="width:${pct}%"></div></div>
+      </div>`;
+  }).join("")||`<div class="sub">Complete tasks to see subject distribution.</div>`;
+}
 
-        <span class="badge ${badgeClass}">
-          ${badgeText}
-        </span>
+/* =========================================================
+   CALENDAR
+========================================================= */
 
-      `;
+let calendarDate=new Date();
 
+function renderCalendar(){
+  const y=calendarDate.getFullYear();
+  const m=calendarDate.getMonth();
 
-      taskList.appendChild(taskEl);
+  $("#calendarTitle").textContent=
+    calendarDate.toLocaleDateString(undefined,{month:"long",year:"numeric"});
 
-    });
+  const first=new Date(y,m,1).getDay();
+  const days=new Date(y,m+1,0).getDate();
 
+  let html=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+    .map(x=>`<div class="calHead">${x}</div>`).join("");
 
-    container.appendChild(dayCard);
+  for(let i=0;i<first;i++)html+=`<div></div>`;
 
+  for(let d=1;d<=days;d++){
+    const date=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const tasks=data.tasks.filter(t=>t.date===date);
+    const done=tasks.filter(t=>t.done).length;
+
+    html+=`
+      <div class="calDay ${date===todayISO()?"today":""}">
+        <b>${d}</b>
+        ${tasks.length?
+          `<div class="calDot">● ${done}/${tasks.length} tasks</div>`:""}
+      </div>`;
+  }
+
+  $("#calendarGrid").innerHTML=html;
+}
+
+$("#prevMonth").onclick=()=>{
+  calendarDate.setMonth(calendarDate.getMonth()-1);
+  renderCalendar();
+};
+
+$("#nextMonth").onclick=()=>{
+  calendarDate.setMonth(calendarDate.getMonth()+1);
+  renderCalendar();
+};
+
+/* =========================================================
+   GOALS
+========================================================= */
+
+function renderGoals(){
+  $("#goalsList").innerHTML=data.goals.length?
+    data.goals.map(g=>{
+      const days=Math.ceil((dateObj(g.date)-new Date())/86400000);
+      return `
+        <div class="card goal">
+          <div class="goalTop">
+            <div>
+              <h2>${esc(g.name)}</h2>
+              <div class="sub">Target: ${esc(g.score||"—")} • ${esc(g.priority)}</div>
+            </div>
+            <div style="text-align:right">
+              <b>${days>=0?days+" days":"Passed"}</b>
+              <div class="sub">${esc(g.date)}</div>
+            </div>
+          </div>
+          <div class="progress" style="margin-top:15px">
+            <div style="width:${Math.max(0,Math.min(100,totalProgress()))}%"></div>
+          </div>
+          <div class="sub" style="margin-top:6px">
+            Syllabus preparation: ${totalProgress()}%
+          </div>
+        </div>`;
+    }).join(""):
+    `<div class="card" style="text-align:center;padding:50px">
+      <h2>No exams added yet</h2>
+      <div class="sub">Add your next important deadline.</div>
+    </div>`;
+}
+
+$("#addGoal").onclick=()=>$("#goalModal").classList.add("open");
+
+$("#saveGoal").onclick=()=>{
+  const name=$("#goalName").value.trim();
+  const date=$("#goalDate").value;
+
+  if(!name||!date){
+    alert("Add an exam name and date.");
+    return;
+  }
+
+  data.goals.push({
+    id:uid(),
+    name,
+    date,
+    score:$("#goalScore").value,
+    priority:$("#goalPriority").value
   });
 
-}
+  $("#goalName").value="";
+  $("#goalDate").value="";
+  $("#goalScore").value="";
 
+  save();
+  $("#goalModal").classList.remove("open");
+  renderGoals();
+};
 
 /* =========================================================
-   TASK CHECKBOX
+   NOTES
 ========================================================= */
 
-function toggleTask(taskId){
+function renderNotes(){
+  $("#notesList").innerHTML=data.notes.length?
+    [...data.notes].reverse().map(n=>`
+      <div class="card" style="margin:10px 0">
+        <div style="display:flex;justify-content:space-between">
+          <div>
+            <h2>${esc(n.title)}</h2>
+            <div class="sub">${esc(n.chapter||"General")} • ${esc(n.date)}</div>
+          </div>
+          <button class="btn danger" onclick="deleteNote('${n.id}')">Delete</button>
+        </div>
+        <div style="margin-top:14px;white-space:pre-wrap;font-size:13px;color:var(--muted)">
+          ${esc(n.body)}
+        </div>
+      </div>
+    `).join(""):
+    `<div class="card" style="text-align:center;padding:40px">
+      <div class="sub">No notes yet.</div>
+    </div>`;
+}
 
-  if(state.completed[taskId]){
+$("#saveNote").onclick=()=>{
+  const title=$("#noteTitle").value.trim();
+  const body=$("#noteBody").value.trim();
 
-    delete state.completed[taskId];
-
-  }else{
-
-    state.completed[taskId] = true;
-
+  if(!title||!body){
+    alert("Add a title and note.");
+    return;
   }
 
-  saveState();
+  const id=$("#noteChapter").value;
+  const c=data.chapters.find(x=>x.id===id);
 
-  renderPlan();
-
-  updateDashboardStats();
-
-}
-
-
-/* =========================================================
-   SHARE
-========================================================= */
-
-function buildPlanText(){
-
-  let text =
-    `📚 StudyForge V6 Plan\n\n`;
-
-  text +=
-    `Exam: ${state.exam}\n`;
-
-  text +=
-    `Country: ${state.country}\n`;
-
-  text +=
-    `Daily study: ${state.studyHours} hours\n`;
-
-  text +=
-    `Exam date: ${state.examDate}\n\n`;
-
-
-  state.plan.forEach(day=>{
-
-    text +=
-      `DAY ${day.day}\n`;
-
-    day.tasks.forEach(task=>{
-
-      text +=
-        `${state.completed[task.id] ? "✓":"○"} `+
-        `${task.title} — ${task.detail}\n`;
-
-    });
-
-    text += "\n";
-
+  data.notes.push({
+    id:uid(),
+    title,
+    body,
+    chapter:c?c.name:"",
+    date:todayISO()
   });
 
-  return text;
+  $("#noteTitle").value="";
+  $("#noteBody").value="";
 
+  save();
+  renderNotes();
+};
+
+function deleteNote(id){
+  data.notes=data.notes.filter(n=>n.id!==id);
+  save();
+  renderNotes();
 }
-
-
-async function copyPlan(){
-
-  const text =
-    buildPlanText();
-
-  try{
-
-    await navigator.clipboard.writeText(text);
-
-    alert("Plan copied to clipboard! 📋");
-
-  }catch(e){
-
-    prompt(
-      "Copy your StudyForge plan:",
-      text
-    );
-
-  }
-
-}
-
-
-async function sharePlan(){
-
-  const text =
-    buildPlanText();
-
-  if(navigator.share){
-
-    try{
-
-      await navigator.share({
-
-        title:"My StudyForge Plan",
-
-        text
-
-      });
-
-    }catch(e){}
-
-  }else{
-
-    await copyPlan();
-
-  }
-
-}
-
 
 /* =========================================================
-   SAVE PLAN
+   PROFILE / SETTINGS
 ========================================================= */
 
-function savePlan(){
+function renderSettings(){
+  $("#profileName").value=data.profile.name||"Student";
+  $("#profileGoal").value=data.profile.goal||"";
+  $("#settingCountry").textContent=data.profile.country;
+  $("#settingCurriculum").textContent=data.profile.curriculum;
+}
 
-  const blob =
-    new Blob(
-      [buildPlanText()],
-      {type:"text/plain"}
-    );
+$("#saveProfile").onclick=()=>{
+  data.profile.name=$("#profileName").value.trim()||"Student";
+  data.profile.goal=$("#profileGoal").value.trim();
+  save();
+  updateAll();
+  alert("Profile saved.");
+};
 
-  const url =
-    URL.createObjectURL(blob);
+$("#themeBtn").onclick=()=>{
+  data.theme=data.theme==="dark"?"light":"dark";
+  save();
+  applyTheme();
+};
 
-  const a =
-    document.createElement("a");
+function applyTheme(){
+  document.body.classList.toggle("light",data.theme==="light");
+  $("#themeBtn").textContent=data.theme==="light"?"☀":"☾";
+}
 
-  a.href = url;
+/* =========================================================
+   IMPORT / EXPORT
+========================================================= */
 
-  a.download =
-    "StudyForge-V6-Plan.txt";
-
-  document.body.appendChild(a);
-
+$("#exportData").onclick=()=>{
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="prepluma-backup.json";
   a.click();
+  URL.revokeObjectURL(a.href);
+};
 
-  a.remove();
+$("#importDataBtn").onclick=()=>$("#importData").click();
 
-  URL.revokeObjectURL(url);
+$("#importData").onchange=e=>{
+  const file=e.target.files[0];
+  if(!file)return;
 
-}
+  const reader=new FileReader();
 
+  reader.onload=()=>{
+    try{
+      const imported=JSON.parse(reader.result);
+      data={...defaultData,...imported};
+      save();
+      location.reload();
+    }catch{
+      alert("Invalid backup file.");
+    }
+  };
+
+  reader.readAsText(file);
+};
+
+$("#resetAll").onclick=()=>{
+  if(!confirm("Reset ALL PrepLuma data? This cannot be undone."))return;
+  localStorage.removeItem("prepluma_v22");
+  location.reload();
+};
 
 /* =========================================================
-   RESET
+   CUSTOM CHAPTERS
 ========================================================= */
 
-function resetApp(){
+$("#addChapterBtn").onclick=()=>{
+  $("#chapterModal").classList.add("open");
+};
 
-  const confirmReset =
-    confirm(
-      "Reset StudyForge completely? Your topics, plan and completed tasks will be deleted."
+document.addEventListener("click",e=>{
+  if(e.target.id==="emptyAddChapter"){
+    $("#chapterModal").classList.add("open");
+  }
+});
+
+$("#saveCustomChapter").onclick=()=>{
+  const subject=$("#customSubject").value.trim();
+  const name=$("#customChapter").value.trim();
+  const concepts=$("#customConcepts").value
+    .split(",").map(x=>x.trim()).filter(Boolean);
+
+  if(!subject||!name){
+    alert("Enter subject and chapter.");
+    return;
+  }
+
+  const c=makeChapter(subject,name,concepts,true);
+  c.selected=true;
+  c.priority="High";
+  data.chapters.push(c);
+
+  $("#customSubject").value="";
+  $("#customChapter").value="";
+  $("#customConcepts").value="";
+
+  save();
+  $("#chapterModal").classList.remove("open");
+  renderChapters();
+  populateAllChapterSelects();
+  updateAll();
+};
+
+/* =========================================================
+   STREAK
+========================================================= */
+
+function updateStreak(){
+  const today=todayISO();
+
+  if(data.lastStudy===today)return;
+
+  if(data.lastStudy===addDays(today,-1)){
+    data.streak++;
+  }else{
+    data.streak=1;
+  }
+
+  data.lastStudy=today;
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+$("#globalSearch").addEventListener("keydown",e=>{
+  if(e.key!=="Enter")return;
+
+  const q=e.target.value.trim().toLowerCase();
+  if(!q)return;
+
+  const found=data.chapters.find(c=>
+    c.name.toLowerCase().includes(q) ||
+    c.subject.toLowerCase().includes(q)
+  );
+
+  if(found){
+    showPage("chapters");
+    $("#chapterSearch").value=q;
+    renderChapters();
+  }else{
+    const note=data.notes.find(n=>
+      n.title.toLowerCase().includes(q) ||
+      n.body.toLowerCase().includes(q)
     );
 
-  if(!confirmReset) return;
-
-  localStorage.removeItem(STORAGE_KEY);
-
-  location.reload();
-
-}
-
+    if(note)showPage("notes");
+    else alert("No matching chapter, note or task found.");
+  }
+});
 
 /* =========================================================
-   EVENTS
+   MASTER UPDATE
 ========================================================= */
 
-$("countrySelect").addEventListener(
-  "change",
-  ()=>{
+function updateAll(){
+  const xp=data.xp||0;
+  const level=Math.floor(xp/500)+1;
 
-    state.country =
-      $("countrySelect").value;
+  $("#xp").textContent=xp;
+  $("#levelText").textContent=`Level ${level}`;
+  $("#sideName").textContent=data.profile.name||"Student";
+  $("#sideLevel").textContent=`Level ${level} • ${xp} XP`;
+  $("#avatar").textContent=(data.profile.name||"S").charAt(0).toUpperCase();
+  $("#streak").textContent=`${data.streak||0} days`;
 
-    state.exam = "";
+  const mins=data.studyLog[todayISO()]||0;
+  $("#studyTime").textContent=
+    `${Math.floor(mins/60)}h ${mins%60}m`;
 
-    state.selectedSubjects = [];
+  renderDashboard();
+  renderRevision();
+  renderAnalytics();
+  renderGoals();
+  renderNotes();
+  renderSettings();
+  populateAllChapterSelects();
+  renderMindMap();
+  renderCalendar();
+}
 
-    state.topics = [];
+/* =========================================================
+   EXTRA: MARK CURRENT FOCUS SESSION AS STUDY
+========================================================= */
 
-    state.plan = [];
+document.addEventListener("visibilitychange",()=>{});
 
-    state.completed = {};
-
-    populateExams();
-
-    renderExamDescription();
-
-    saveState();
-
-  }
-);
-
-
-$("examSelect").addEventListener(
-  "change",
-  ()=>{
-
-    state.exam =
-      $("examSelect").value;
-
-    state.selectedSubjects = [];
-
-    state.topics = [];
-
-    state.plan = [];
-
-    state.completed = {};
-
-    renderExamDescription();
-
-    saveState();
-
-  }
-);
-
-
-$("examDate").addEventListener(
-  "change",
-  updateDeadline
-);
-
-
-$("studyDays").addEventListener(
-  "change",
-  updateDeadline
-);
-
+/* Close modal by background */
+$$(".modal").forEach(m=>{
+  m.addEventListener("click",e=>{
+    if(e.target===m)m.classList.remove("open");
+  });
+});
 
 /* =========================================================
    START
 ========================================================= */
 
 init();
+updateTimer();
 
+/* Add an initial welcome plan only when completely empty */
+if(!data.chapters.length){
+  ensureDatabaseChapters();
+  save();
+  populateCountry();
+  populateCurriculum();
+  populateSubject();
+  renderChapters();
+  updateAll();
+}
 </script>
-
 </body>
 </html>
